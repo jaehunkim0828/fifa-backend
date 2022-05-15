@@ -2,6 +2,5 @@
 .env
 
 # package
-package.json
 /node_modules
 yarn.lock
