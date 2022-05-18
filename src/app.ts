@@ -1,10 +1,20 @@
-import express from "express";
+import express, { Request, Response, NextFunction, ErrorRequestHandler} from "express";
+import { sequelize } from "./db";
+
+import rootRouter from "./routes";
 
 const port = 8080;
 const app = express();
 
-app.get('/', (req, res, next): void => {
-    res.send('hello world');
+app.use('/', rootRouter);
+
+
+//체크 못한 error
+app.use((error: ErrorRequestHandler, req: Request, res: Response, next: NextFunction) => {
+    console.error(error);
+    res.sendStatus(500);
 })
 
-app.listen(port, () => console.log(`running ${port} port.`));
+sequelize.sync().then(() => {
+    app.listen(port, () => console.log(`running ${port} port.`));
+})
