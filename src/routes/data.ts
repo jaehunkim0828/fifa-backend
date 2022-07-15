@@ -16,10 +16,12 @@ dataRouter.route("/season").get((req: Request, res: Response, next: NextFunction
   });
 });
 dataRouter.route("/player").get(async (req: Request, res: Response, next: NextFunction) => {
+  const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
   const data = await getFifaApi("https://static.api.nexon.co.kr/fifaonline4/latest/spid.json");
   const a = data.data.map((e: { id: number }) => {
     return { ...e, seasonSeasonId: +e.id.toString().slice(0, 3) };
   });
+  await wait(10000);
   a.forEach(async (e: any) => {
     await Player.create(e);
   });
