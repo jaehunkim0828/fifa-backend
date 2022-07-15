@@ -15,23 +15,27 @@ dataRouter.route("/season").get((req: Request, res: Response, next: NextFunction
     await Season.create({ seasonId: sea.id, className: sea.name, seasonImg: sea.seasonId });
   });
 });
+
 dataRouter.route("/player").get(async (req: Request, res: Response, next: NextFunction) => {
   const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
   let count = 1;
   const data = await getFifaApi("https://static.api.nexon.co.kr/fifaonline4/latest/spid.json");
-  const a = data.data.map(async (e: { id: number }) => {
-    count += 1;
-    if (count % 100 === 0) await wait(500);
-    console.log(`...stop ${count}`);
-    return { ...e, seasonSeasonId: +e.id.toString().slice(0, 3) };
-  });
+  const a = [];
+
+  // for (let i = 0; i < data.data.length; i += 1) {
+  //   count += 1;
+  //   if (count % 100 === 0) await wait(1000);
+  //   console.log(`...stop ${count}`);
+  //   a.push({ ...data.data[i], seasonSeasonId: +data.data[i].id.toString().slice(0, 3) });
+  // }
+
   await wait(10000);
-  a.forEach(async (e: any) => {
-    if (count % 100 === 0) await wait(500);
-    console.log(`...stop ${count}`);
-    await Player.create(e);
-  });
-  res.send("done");
+  // a.forEach(async (e: any) => {
+  //   if (count % 100 === 0) await wait(1000);
+  //   console.log(`...stop ${count}`);
+  //   await Player.create(e);
+  // });
+  res.send(data.data);
 });
 
 export default dataRouter;
