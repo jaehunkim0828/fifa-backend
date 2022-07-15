@@ -5,6 +5,8 @@ import { Position, Season, Player } from "../mysql/schema";
 
 const dataRouter = express.Router();
 
+let gett: any[];
+const result: any[] = [];
 dataRouter.route("/position").get((req: Request, res: Response, next: NextFunction) => {
   position.forEach(async (po) => {
     await Position.create({ spposition: po.position, desc: po.name });
@@ -16,26 +18,26 @@ dataRouter.route("/season").get((req: Request, res: Response, next: NextFunction
   });
 });
 
-dataRouter.route("/player").get(async (req: Request, res: Response, next: NextFunction) => {
-  const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
-  let count = 1;
+dataRouter.route("/player1").get(async (req: Request, res: Response, next: NextFunction) => {
   const data = await getFifaApi("https://static.api.nexon.co.kr/fifaonline4/latest/spid.json");
-  const a = [];
 
-  // for (let i = 0; i < data.data.length; i += 1) {
-  //   count += 1;
-  //   if (count % 100 === 0) await wait(1000);
-  //   console.log(`...stop ${count}`);
-  //   a.push({ ...data.data[i], seasonSeasonId: +data.data[i].id.toString().slice(0, 3) });
-  // }
-
-  await wait(10000);
-  // a.forEach(async (e: any) => {
-  //   if (count % 100 === 0) await wait(1000);
-  //   console.log(`...stop ${count}`);
-  //   await Player.create(e);
-  // });
+  gett = data.data;
   res.send(data.data);
+});
+
+dataRouter.route("/player2").get(async (req: Request, res: Response, next: NextFunction) => {
+  for (let i = 0; i < gett.length; i += 1) {
+    result.push({ ...gett[i], seasonSeasonId: +gett[i].id.toString().slice(0, 3) });
+  }
+
+  res.send(result);
+});
+
+dataRouter.route("/player3").get(async (req: Request, res: Response, next: NextFunction) => {
+  for (let i = 0; i < result.length; i += 1) {
+    await Player.create(result[i]);
+  }
+  res.send("done");
 });
 
 export default dataRouter;
