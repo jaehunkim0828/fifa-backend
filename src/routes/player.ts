@@ -1,19 +1,11 @@
-import express, {Request, Response, NextFunction} from 'express';
+import express, { Request, Response, NextFunction } from "express";
 
-
-import * as playerController from '../controller/player';
-
-
+import * as playerController from "../controller/player.controller";
 
 const playerRouter = express.Router();
 
-playerRouter.route('/spid')
-    .get(playerController.getSpid);
+playerRouter.route("/add/season").get(playerController.updateSeason);
+playerRouter.route("/:id").get(playerController.getPlayerById);
+playerRouter.route("/spid/:name").get(playerController.getPlayerByName);
 
-playerRouter.route('/season')
-    .get(playerController.getSeason);
-
-playerRouter.route('/:id')
-    .get(playerController.getPlayerById);
-
-    export default playerRouter;
+export default playerRouter;

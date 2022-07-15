@@ -1,11 +1,15 @@
 import express, { Request, Response, NextFunction, ErrorRequestHandler} from "express";
-import { sequelize } from "./db";
 
+import { sequelize } from "./mysql/db";
 import rootRouter from "./routes";
+import cors from 'cors';
 
 const port = 8080;
 const app = express();
 
+app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({extended: false}));
 app.use('/', rootRouter);
 
 
