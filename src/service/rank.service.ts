@@ -81,7 +81,7 @@ export async function createRanksEvery() {
   const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
   while (true) {
     console.log(new Date().toLocaleString());
-    if (new Date().getMinutes() === 20 && new Date().getHours() === 4) {
+    if (new Date().getMinutes() === 23 && new Date().getHours() === 4) {
       for (let i = 0; i < players.length; i += 1) {
         const playerArr: string[] = [];
 
