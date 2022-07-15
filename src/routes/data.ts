@@ -20,7 +20,9 @@ dataRouter.route("/player").get(async (req: Request, res: Response, next: NextFu
   const a = data.data.map((e: { id: number }) => {
     return { ...e, seasonSeasonId: +e.id.toString().slice(0, 3) };
   });
-  await Player.create(a);
+  a.forEach(async (e: any) => {
+    await Player.create(e);
+  });
   res.send("done");
 });
 
