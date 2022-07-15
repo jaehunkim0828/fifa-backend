@@ -1,7 +1,13 @@
 # 환경변수
 .env
 
+#build 파일
+/dist
+
 # package
 /node_modules
 package-lock.json
 yarn.lock
+
+# misc
+.DS_Store
