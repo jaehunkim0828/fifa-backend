@@ -82,6 +82,7 @@ export async function createRanksEvery() {
   while (true) {
     console.log(new Date().toLocaleString());
     if (new Date().getMinutes() === 23 && new Date().getHours() === 4) {
+      console.log("come in");
       for (let i = 0; i < players.length; i += 1) {
         const playerArr: string[] = [];
 
