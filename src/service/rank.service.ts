@@ -83,7 +83,7 @@ export async function createRanksEvery() {
 
     const isToTime = (date: Date) => {
       const now = date.toTimeString().substring(0, 5);
-      if (now === "00:35" || now === "10:00" || now === "16:00" || now == "22:00") return true;
+      if (now === "03:36" || now === "10:00" || now === "16:00" || now == "22:00") return true;
       return false;
     };
     if (isToTime(new Date())) {
