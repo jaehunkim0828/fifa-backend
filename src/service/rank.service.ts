@@ -1,4 +1,3 @@
-import SQ, { Op } from "sequelize";
 import { Player, Position, Rank } from "../mysql/schema";
 import * as rankRepository from "../repository/rank";
 import { RankInput } from "../types/rank/rank.crud";
@@ -82,7 +81,12 @@ export async function createRanksEvery() {
   while (true) {
     console.log(new Date().toLocaleString());
 
-    if (new Date().getMinutes() === 29 && new Date().getHours() === 16) {
+    const isToTime = (date: Date) => {
+      const now = date.toTimeString().substring(0, 5);
+      if (now === "04:00" || now === "10:00" || now === "16:00" || now == "22:00") return true;
+      return false;
+    };
+    if (isToTime(new Date())) {
       for (let i = 0; i < players.length; i += 1) {
         const playerArr: string[] = [];
 
@@ -102,59 +106,59 @@ export async function createRanksEvery() {
         ability.data.sort(
           (a: { status: { matchCount: number } }, b: { status: { matchCount: number } }) => b.status.matchCount - a.status.matchCount
         );
-
-        const {
-          spId,
-          spPosition,
-          status: {
-            shoot,
-            effectiveShoot,
-            assist,
-            goal,
-            dribble,
-            dribbleTry,
-            dribbleSuccess,
-            passSuccess,
-            passTry,
-            block,
-            tackle,
-            matchCount,
-          },
-          createDate,
-        } = ability.data[0];
-
-        const existedRank = await Rank.findOne({
-          where: {
-            createDate: createDate,
-            spid: spId,
-            position: spPosition,
-          },
-        });
-
-        await wait(1000);
-
-        if (!existedRank) {
-          await Rank.create({
-            spid: spId,
-            name: name?.get().name,
-            position: spPosition,
-            shoot,
-            effectiveShoot,
-            assist,
-            goal,
-            dribble,
-            dribbleSuccess,
-            dribbleTry,
-            passSuccess,
-            passTry,
-            block,
-            tackle,
-            matchCount,
+        for (let i = 0; i < ability.data.length; i += 1) {
+          const {
+            spId,
+            spPosition,
+            status: {
+              shoot,
+              effectiveShoot,
+              assist,
+              goal,
+              dribble,
+              dribbleTry,
+              dribbleSuccess,
+              passSuccess,
+              passTry,
+              block,
+              tackle,
+              matchCount,
+            },
             createDate,
+          } = ability.data[i];
+
+          const existedRank = await Rank.findOne({
+            where: {
+              createDate: createDate,
+              spid: spId,
+              position: spPosition,
+            },
           });
-          console.log(name?.get().name);
-        } else {
-          console.log(`${name} 선수의 데이터가 이미 존재합니다.`);
+
+          if (!existedRank) {
+            await Rank.create({
+              spid: spId,
+              name: name?.get().name,
+              position: spPosition,
+              shoot,
+              effectiveShoot,
+              assist,
+              goal,
+              dribble,
+              dribbleSuccess,
+              dribbleTry,
+              passSuccess,
+              passTry,
+              block,
+              tackle,
+              matchCount,
+              createDate,
+            });
+            console.log(name?.get().name);
+          } else {
+            console.log(`${name?.get().name} 선수의 데이터가 이미 존재합니다.`);
+          }
+          await wait(100);
         }
       }
     }
