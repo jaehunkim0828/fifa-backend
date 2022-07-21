@@ -1,4 +1,4 @@
-import { Player, Position, Rank } from "../mysql/schema";
+import { Player, Position, Rank, Season } from "../mysql/schema";
 import * as rankRepository from "../repository/rank";
 import { RankInput } from "../types/rank/rank.crud";
 import { players } from "../playerData";
@@ -26,9 +26,13 @@ export async function findAllPosition() {
   return rankRepository.findAllPo();
 }
 
+export async function getRankPlayerPn(current_page: number, count: number) {
+  return rankRepository.findRankWithPlayer(current_page, count);
+}
+
 export async function createRank(rankInput: RankInput): Promise<void> {
   const {
-    spid,
+    spidId,
     position,
     name,
     assist,
@@ -49,14 +53,14 @@ export async function createRank(rankInput: RankInput): Promise<void> {
   const existedRank = await Rank.findOne({
     where: {
       createDate: createDate,
-      spid: spid,
+      spidId: spidId,
       position,
     },
   });
 
   if (!existedRank) {
     await Rank.create({
-      spid,
+      spidId,
       position,
       name,
       assist,
@@ -83,7 +87,7 @@ export async function createRanksEvery() {
 
     const isToTime = (date: Date) => {
       const now = date.toTimeString().substring(0, 5);
-      if (now === "04:00" || now === "10:00" || now === "16:00" || now == "22:00") return true;
+      if (now === "04:00" || now === "11:01" || now === "16:00" || now == "22:00") return true;
       return false;
     };
     if (isToTime(new Date())) {
@@ -130,14 +134,14 @@ export async function createRanksEvery() {
           const existedRank = await Rank.findOne({
             where: {
               createDate: createDate,
-              spid: spId,
+              spidId: spId,
               position: spPosition,
             },
           });
 
           if (!existedRank) {
             await Rank.create({
-              spid: spId,
+              spidId: spId,
               name: name?.get().name,
               position: spPosition,
               shoot,

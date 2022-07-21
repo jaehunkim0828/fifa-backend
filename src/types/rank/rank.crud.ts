@@ -1,5 +1,5 @@
 export class RankInput {
-  spid: string = "";
+  spidId: number;
   position: string;
   name: string;
   assist: string;
@@ -17,7 +17,7 @@ export class RankInput {
   createDate: string;
 
   constructor(
-    spid: string,
+    spidId: number,
     position: string,
     name: string,
     assist: string,
@@ -34,7 +34,7 @@ export class RankInput {
     tackle: string,
     createDate: string
   ) {
-    this.spid = spid;
+    this.spidId = spidId;
     this.position = position;
     this.name = name;
     this.assist = assist;

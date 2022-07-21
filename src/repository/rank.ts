@@ -1,7 +1,7 @@
 import SQ, { Op } from "sequelize";
 
 import { getFifaApi } from "../method";
-import { Position, Rank } from "../mysql/schema";
+import { Player, Position, Rank, Season } from "../mysql/schema";
 
 export async function getrankerInfo(matchtype: number, stringify: string) {
   return getFifaApi(`https://api.nexon.co.kr/fifaonline4/v1.0/rankers/status?matchtype=${matchtype}&players=${encodeURI(stringify)}`);
@@ -30,8 +30,31 @@ export async function findRankByIdAndPostion(spid: string, po: string) {
       [SQ.fn("AVG", SQ.col("tackle")), "tackle"],
     ],
     where: {
-      spid,
+      spidId: spid,
       position,
     },
+  });
+}
+
+export async function findRankWithPlayer(current_page: number, count: number) {
+  const limit = count;
+  let offset = 0;
+  if (current_page > 1) offset = limit * (current_page - 1);
+
+  return Player.findAll({
+    attributes: ["id", "name"],
+    limit: limit,
+    offset: offset,
+    include: [
+      {
+        model: Rank,
+        required: true,
+        attributes: [],
+      },
+      {
+        model: Season,
+        attributes: ["className", "seasonImg"],
+      },
+    ],
   });
 }

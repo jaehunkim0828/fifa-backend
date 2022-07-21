@@ -1,8 +1,6 @@
-import SQ from "sequelize";
+import { DataTypes } from "sequelize";
 
 import { sequelize } from "../mysql/db";
-
-const DataTypes = SQ.DataTypes;
 
 export const Player = sequelize.define(
   "spids",
@@ -67,10 +65,6 @@ export const Rank = sequelize.define(
       allowNull: false,
       autoIncrement: true,
     },
-    spid: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     name: {
       type: DataTypes.STRING(128),
       allowNull: false,
@@ -134,3 +128,6 @@ export const Rank = sequelize.define(
   },
   { timestamps: false }
 );
+
+Rank.belongsTo(Player);
+Player.hasMany(Rank);

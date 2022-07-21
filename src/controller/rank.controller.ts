@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, CustomQuery } from "express";
+import { Player, Rank, Season } from "../mysql/schema";
 
 import * as rankService from "../service/rank.service";
 import { RankType } from "../types/rank/rank";
@@ -45,7 +46,7 @@ export async function createPlayerRank(req: Request, res: Response, next: NextFu
   // 날짜 spid겹치는거 있는지 확인
   try {
     await rankService.createRank({
-      spid,
+      spidId: +spid,
       position,
       name,
       assist,
@@ -87,5 +88,33 @@ export async function getPlayerTotalScorecard(req: Request<"", "", "", RankType>
     res.status(200).send(data[0]);
   } catch (err) {
     res.status(404).send("An unexpected error occured");
+  }
+}
+
+export async function getAllRank(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { current_page, count }: CustomQuery = req.query;
+    const ranks = await rankService.getRankPlayerPn(+current_page, +count);
+    res.status(200).send(ranks);
+  } catch (err) {
+    if (err instanceof Error) res.status(404).send(err);
+  }
+}
+
+export async function countAllRank(req: Request, res: Response, next: NextFunction) {
+  try {
+    const totalRankPlayer = await Player.findAndCountAll({
+      include: [
+        {
+          model: Rank,
+          required: true,
+          attributes: [],
+        },
+      ],
+    });
+
+    res.status(200).send(`${totalRankPlayer.rows.length}`);
+  } catch (err) {
+    if (err instanceof Error) res.status(404).send(err);
   }
 }
