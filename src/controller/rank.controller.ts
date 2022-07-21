@@ -81,7 +81,7 @@ export async function createPlayerAuto(req: Request, res: Response, next: NextFu
   }
 }
 
-export async function getPlayerTotalScorecard(req: Request<"", "", "", RankType>, res: Response, next: NextFunction) {
+export async function getPlayerTotalScorecard(req: Request, res: Response, next: NextFunction) {
   const { spid, po } = req.query;
   try {
     const data = await rankService.getRankById(spid, po);
@@ -93,7 +93,7 @@ export async function getPlayerTotalScorecard(req: Request<"", "", "", RankType>
 
 export async function getAllRank(req: Request, res: Response, next: NextFunction) {
   try {
-    const { current_page, count }: CustomQuery = req.query;
+    const { current_page, count } = req.query;
     const ranks = await rankService.getRankPlayerPn(+current_page, +count);
     res.status(200).send(ranks);
   } catch (err) {
