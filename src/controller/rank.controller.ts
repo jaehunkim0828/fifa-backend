@@ -103,15 +103,7 @@ export async function getAllRank(req: Request, res: Response, next: NextFunction
 
 export async function countAllRank(req: Request, res: Response, next: NextFunction) {
   try {
-    const totalRankPlayer = await Player.findAndCountAll({
-      include: [
-        {
-          model: Rank,
-          required: true,
-          attributes: [],
-        },
-      ],
-    });
+    const totalRankPlayer = await rankService.totalRankCount();
 
     res.status(200).send(`${totalRankPlayer.rows.length}`);
   } catch (err) {

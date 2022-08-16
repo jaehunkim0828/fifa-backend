@@ -172,3 +172,7 @@ export async function createRanksEvery() {
     }
   }
 }
+
+export async function totalRankCount() {
+  return rankRepository.totalRankCount();
+}

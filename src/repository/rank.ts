@@ -58,3 +58,15 @@ export async function findRankWithPlayer(current_page: number, count: number) {
     ],
   });
 }
+
+export async function totalRankCount() {
+  return Player.findAndCountAll({
+    include: [
+      {
+        model: Rank,
+        required: true,
+        attributes: [],
+      },
+    ],
+  });
+}
