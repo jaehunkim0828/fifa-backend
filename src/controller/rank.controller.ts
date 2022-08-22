@@ -47,21 +47,23 @@ export async function createPlayerRank(req: Request, res: Response, next: NextFu
   // 날짜 spid겹치는거 있는지 확인
   try {
     await rankService.createRank({
-      spidId: +spid,
-      position,
+      spId: +spid,
+      spPosition: position,
       name,
-      assist,
-      block,
-      dribble,
-      dribbleSuccess,
-      dribbleTry,
-      effectiveShoot,
-      goal,
-      matchCount,
-      passSuccess,
-      passTry,
-      shoot,
-      tackle,
+      status: {
+        assist,
+        block,
+        dribble,
+        dribbleSuccess,
+        dribbleTry,
+        effectiveShoot,
+        goal,
+        matchCount,
+        passSuccess,
+        passTry,
+        shoot,
+        tackle,
+      },
       createDate,
     });
     res.status(201).send(`${name}선수의 데이터가 생성되었습니다.`);

@@ -33,21 +33,10 @@ export async function getRankPlayerPn(current_page: number, count: number) {
 
 export async function createRank(rankInput: RankInput): Promise<void> {
   const {
-    spidId,
-    position,
+    spId,
+    spPosition,
     name,
-    assist,
-    block,
-    dribble,
-    dribbleSuccess,
-    dribbleTry,
-    effectiveShoot,
-    goal,
-    matchCount,
-    passSuccess,
-    passTry,
-    shoot,
-    tackle,
+    status: { assist, block, dribble, dribbleSuccess, dribbleTry, effectiveShoot, goal, matchCount, passSuccess, passTry, shoot, tackle },
     createDate,
   } = rankInput;
 
@@ -56,8 +45,8 @@ export async function createRank(rankInput: RankInput): Promise<void> {
       createDate: {
         [Op.lte]: createDate,
       },
-      spidId: spidId,
-      position,
+      spidId: spId,
+      position: spPosition,
     },
     order: [["createDate", "DESC"]],
   });
@@ -79,8 +68,8 @@ export async function createRank(rankInput: RankInput): Promise<void> {
   // 지금 날짜 보다 전 날짜면 update, 없으면 create
   if (!existedRank.length) {
     await Rank.create({
-      spidId,
-      position,
+      spidId: spId,
+      position: spPosition,
       name,
       assist,
       block,
@@ -119,7 +108,7 @@ export async function createRank(rankInput: RankInput): Promise<void> {
         },
       }
     );
-  } else throw new Error(`${name} 선수의 데이터가 이미 존재합니다.`);
+  } else console.log(`${name} 선수의 데이터가 이미 존재합니다.`);
 }
 
 export async function createRanksEvery() {
@@ -129,7 +118,7 @@ export async function createRanksEvery() {
 
     const isToTime = (date: Date) => {
       const now = date.toTimeString().substring(0, 5);
-      if (now === "04:00" || now === "11:01" || now === "16:00" || now == "22:00") return true;
+      if (now === "04:00" || now === "11:01" || now === "16:00" || now == "15:35") return true;
       return false;
     };
     if (isToTime(new Date())) {
@@ -153,57 +142,9 @@ export async function createRanksEvery() {
           (a: { status: { matchCount: number } }, b: { status: { matchCount: number } }) => b.status.matchCount - a.status.matchCount
         );
         for (let i = 0; i < ability.data.length; i += 1) {
-          const {
-            spId,
-            spPosition,
-            status: {
-              shoot,
-              effectiveShoot,
-              assist,
-              goal,
-              dribble,
-              dribbleTry,
-              dribbleSuccess,
-              passSuccess,
-              passTry,
-              block,
-              tackle,
-              matchCount,
-            },
-            createDate,
-          } = ability.data[i];
+          ability.data[i].name = name?.get().name;
 
-          const existedRank = await Rank.findOne({
-            where: {
-              createDate: createDate,
-              spidId: spId,
-              position: spPosition,
-            },
-          });
-
-          if (!existedRank) {
-            await Rank.create({
-              spidId: spId,
-              name: name?.get().name,
-              position: spPosition,
-              shoot,
-              effectiveShoot,
-              assist,
-              goal,
-              dribble,
-              dribbleSuccess,
-              dribbleTry,
-              passSuccess,
-              passTry,
-              block,
-              tackle,
-              matchCount,
-              createDate,
-            });
-            console.log(name?.get().name);
-          } else {
-            console.log(`${name?.get().name} 선수의 데이터가 이미 존재합니다.`);
-          }
+          await createRank(ability.data[i]);
           await wait(100);
         }
       }
