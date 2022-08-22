@@ -51,7 +51,7 @@ export async function createRank(rankInput: RankInput): Promise<void> {
     order: [["createDate", "DESC"]],
   });
 
-  const prev = existedRank[0].get();
+  const prev = existedRank[0]?.get();
 
   function addDecimalPoint(a: number, b: number) {
     return +(a + b).toFixed(12);
