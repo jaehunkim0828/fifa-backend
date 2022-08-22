@@ -2,16 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import SQ from "sequelize";
 
 import * as playerService from "../service/player.service";
-import { Player } from "../mysql/schema";
-
-const Op = SQ.Op;
 
 export async function getPlayerByName(req: Request, res: Response, next: NextFunction) {
   const { name } = req.params;
   const { current_page, count } = req.query;
   try {
-    const player = await playerService.findPlayers(name, current_page, count);
-    res.status(200).send(player);
+    if (typeof current_page === "string" && typeof count === "string") {
+      const player = await playerService.findPlayers(name, current_page, count);
+      res.status(200).send(player);
+    }
+    throw new Error("unexpected error");
   } catch (err) {
     res.status(404).send(err);
   }

@@ -5,6 +5,30 @@ const Op = SQ.Op;
 
 export async function getplayerAllSeason(name: string, count: string, current_page: string) {
   const names = name.split(",").map((p) => p.trim());
+  console.log(count);
+
+  if (!+count) {
+    return Player.findAll({
+      attributes: ["id", "name"],
+      where: {
+        [Op.or]: names.map((n) => {
+          return {
+            name: {
+              [Op.like]: `%${n}%`,
+            },
+          };
+        }),
+      },
+      include: [
+        {
+          attributes: ["classname", "seasonImg"],
+          model: Season,
+          required: true,
+        },
+      ],
+    });
+  }
+
   const limit = +count;
   let offset = 0;
   if (+current_page > 1) offset = limit * (+current_page - 1);

@@ -1,7 +1,7 @@
 import { Player, Position, Rank, Season } from "../mysql/schema";
 import * as rankRepository from "../repository/rank";
 import { RankInput } from "../types/rank/rank.crud";
-import { players } from "../playerData";
+import players from "../players.json";
 import { Op } from "sequelize";
 
 export async function getRankById(spid: string, po: string) {
@@ -122,18 +122,18 @@ export async function createRanksEvery() {
       return false;
     };
     if (isToTime(new Date())) {
-      for (let i = 0; i < players.length; i += 1) {
+      for (let i = 0; i < players.selectedPlayer.length; i += 1) {
         const playerArr: string[] = [];
 
         for (let j = 0; j < 26; j += 1) {
-          playerArr.push(`{"id":${players[i].spid},"po":${j}}`);
+          playerArr.push(`{"id":${players.selectedPlayer[i].spid},"po":${j}}`);
         }
 
         let stringify = `[${playerArr}]`;
         const name = await Player.findOne({
           attributes: ["name"],
           where: {
-            id: players[i].spid,
+            id: players.selectedPlayer[i].spid,
           },
         });
 

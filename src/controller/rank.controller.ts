@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, CustomQuery } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Player, Rank, Season } from "../mysql/schema";
 
 import * as rankService from "../service/rank.service";
@@ -87,8 +87,11 @@ export async function createPlayerAuto(req: Request, res: Response, next: NextFu
 export async function getPlayerTotalScorecard(req: Request, res: Response, next: NextFunction) {
   const { spid, po } = req.query;
   try {
-    const data = await rankService.getRankById(spid, po);
-    res.status(200).send(data[0]);
+    if (typeof spid === "string" && typeof po === "string") {
+      const data = await rankService.getRankById(spid, po);
+      res.status(200).send(data[0]);
+    }
+    throw new Error("unexpected error");
   } catch (err) {
     res.status(404).send("An unexpected error occured");
   }
@@ -97,8 +100,11 @@ export async function getPlayerTotalScorecard(req: Request, res: Response, next:
 export async function getAllRank(req: Request, res: Response, next: NextFunction) {
   try {
     const { current_page, count } = req.query;
-    const ranks = await rankService.getRankPlayerPn(+current_page, +count);
-    res.status(200).send(ranks);
+    if (typeof current_page === "string" && typeof count === "string") {
+      const ranks = await rankService.getRankPlayerPn(+current_page, +count);
+      res.status(200).send(ranks);
+    }
+    throw new Error("unexpected error");
   } catch (err) {
     if (err instanceof Error) res.status(404).send(err);
   }
