@@ -43,6 +43,7 @@ export async function createPlayerRank(req: Request, res: Response, next: NextFu
     tackle,
     createDate,
   } = req.body;
+
   // 날짜 spid겹치는거 있는지 확인
   try {
     await rankService.createRank({

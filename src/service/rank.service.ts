@@ -2,6 +2,7 @@ import { Player, Position, Rank, Season } from "../mysql/schema";
 import * as rankRepository from "../repository/rank";
 import { RankInput } from "../types/rank/rank.crud";
 import { players } from "../playerData";
+import { Op } from "sequelize";
 
 export async function getRankById(spid: string, po: string) {
   return rankRepository.findRankByIdAndPostion(spid, po);
@@ -50,15 +51,33 @@ export async function createRank(rankInput: RankInput): Promise<void> {
     createDate,
   } = rankInput;
 
-  const existedRank = await Rank.findOne({
+  const existedRank = await Rank.findAll({
     where: {
-      createDate: createDate,
+      createDate: {
+        [Op.lte]: createDate,
+      },
       spidId: spidId,
       position,
     },
+    order: [["createDate", "DESC"]],
   });
 
-  if (!existedRank) {
+  const prev = existedRank[0].get();
+
+  function addDecimalPoint(a: number, b: number) {
+    return +(a + b).toFixed(12);
+  }
+
+  function calculateAverage(prevData: number, newData: number) {
+    return (
+      Math.round(
+        (Math.round(addDecimalPoint(prevData * prev.matchCount, newData * +matchCount)) / (prev.matchCount + +matchCount)) * 10000
+      ) / 10000
+    );
+  }
+
+  // 지금 날짜 보다 전 날짜면 update, 없으면 create
+  if (!existedRank.length) {
     await Rank.create({
       spidId,
       position,
@@ -77,6 +96,29 @@ export async function createRank(rankInput: RankInput): Promise<void> {
       tackle,
       createDate,
     });
+  } else if (prev.createDate < createDate) {
+    await Rank.update(
+      {
+        assist: calculateAverage(prev.assist, +assist),
+        block: calculateAverage(prev.block, +block),
+        dribble: calculateAverage(prev.dribble, +dribble),
+        dribbleSuccess: calculateAverage(prev.dribbleSuccess, +dribbleSuccess),
+        dribbleTry: calculateAverage(prev.dribbleTry, +dribbleTry),
+        effectiveShoot: calculateAverage(prev.effectiveShoot, +effectiveShoot),
+        goal: calculateAverage(prev.goal, +goal),
+        passSuccess: calculateAverage(prev.passSuccess, +passSuccess),
+        passTry: calculateAverage(prev.passTry, +passTry),
+        shoot: calculateAverage(prev.shoot, +shoot),
+        tackle: calculateAverage(prev.tackle, +tackle),
+        matchCount: prev.matchCount + matchCount,
+        createDate,
+      },
+      {
+        where: {
+          id: prev.id,
+        },
+      }
+    );
   } else throw new Error(`${name} 선수의 데이터가 이미 존재합니다.`);
 }
 
