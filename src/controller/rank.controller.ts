@@ -89,7 +89,7 @@ export async function getPlayerTotalScorecard(req: Request, res: Response, next:
   try {
     if (typeof spid === "string" && typeof po === "string") {
       const data = await rankService.getRankById(spid, po);
-      res.status(200).send(data[0]);
+      return res.status(200).send(data[0]);
     }
     throw new Error("unexpected error");
   } catch (err) {
