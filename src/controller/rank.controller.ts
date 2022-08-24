@@ -102,7 +102,7 @@ export async function getAllRank(req: Request, res: Response, next: NextFunction
     const { current_page, count } = req.query;
     if (typeof current_page === "string" && typeof count === "string") {
       const ranks = await rankService.getRankPlayerPn(+current_page, +count);
-      res.status(200).send(ranks);
+      return res.status(200).send(ranks);
     }
     throw new Error("unexpected error");
   } catch (err) {

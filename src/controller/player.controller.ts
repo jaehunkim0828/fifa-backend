@@ -9,7 +9,7 @@ export async function getPlayerByName(req: Request, res: Response, next: NextFun
   try {
     if (typeof current_page === "string" && typeof count === "string") {
       const player = await playerService.findPlayers(name, current_page, count);
-      res.status(200).send(player);
+      return res.status(200).send(player);
     }
     throw new Error("unexpected error");
   } catch (err) {
