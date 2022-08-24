@@ -1,14 +1,19 @@
-import { Player, Season } from "../mysql/schema";
+import { Player, Rank, Season } from "../mysql/schema";
 import SQ from "sequelize";
 
 const Op = SQ.Op;
 
+/** 검색한 선수 보여주기
+ *  @argument name 선수이름
+ *  @argument count: 보여줄 선수 갯수
+ *  @argument current_page: 현재 페이지
+ */
 export async function getplayerAllSeason(name: string, count: string, current_page: string) {
   const names = name.split(",").map((p) => p.trim());
-  console.log(count);
 
   if (!+count) {
-    return Player.findAll({
+    /** 선수 전체 다 보여주기 */
+    return await Player.findAll({
       attributes: ["id", "name"],
       where: {
         [Op.or]: names.map((n) => {
@@ -20,6 +25,11 @@ export async function getplayerAllSeason(name: string, count: string, current_pa
         }),
       },
       include: [
+        {
+          model: Rank,
+          as: "ranks",
+          attributes: ["matchCount"],
+        },
         {
           attributes: ["classname", "seasonImg"],
           model: Season,
@@ -35,8 +45,6 @@ export async function getplayerAllSeason(name: string, count: string, current_pa
 
   return Player.findAll({
     attributes: ["id", "name"],
-    limit: limit,
-    offset: offset,
     where: {
       [Op.or]: names.map((n) => {
         return {
@@ -48,11 +56,33 @@ export async function getplayerAllSeason(name: string, count: string, current_pa
     },
     include: [
       {
+        model: Rank,
+        as: "ranks",
+        required: false,
+        attributes: ["matchCount"],
+      },
+      {
         attributes: ["classname", "seasonImg"],
         model: Season,
         required: true,
       },
     ],
+  }).then((data) => {
+    const deepCopyData = JSON.parse(JSON.stringify(data));
+
+    deepCopyData.map((player: { ranks: any; count: number }) => {
+      let totalCount = 0;
+      player.ranks.forEach((count: any) => {
+        totalCount += count.matchCount;
+      });
+      player.count = totalCount;
+      delete player.ranks;
+    });
+
+    deepCopyData.sort(function (a: any, b: any) {
+      return b.count - a.count;
+    });
+    return deepCopyData.slice(offset, offset + +count);
   });
 }
 

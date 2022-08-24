@@ -43,19 +43,35 @@ export async function findRankWithPlayer(current_page: number, count: number) {
 
   return Player.findAll({
     attributes: ["id", "name"],
-    limit: limit,
-    offset: offset,
     include: [
       {
         model: Rank,
+        as: "ranks",
         required: true,
-        attributes: [],
+        attributes: ["matchCount"],
       },
       {
         model: Season,
         attributes: ["className", "seasonImg"],
       },
     ],
+  }).then((data) => {
+    const deepCopyData = JSON.parse(JSON.stringify(data));
+
+    deepCopyData.map((player: { ranks: any; count: number }) => {
+      let totalCount = 0;
+      player.ranks.forEach((count: any) => {
+        totalCount += count.matchCount;
+      });
+      player.count = totalCount;
+      delete player.ranks;
+    });
+
+    deepCopyData.sort(function (a: any, b: any) {
+      return b.count - a.count;
+    });
+
+    return deepCopyData.slice(offset, offset + count);
   });
 }
 
