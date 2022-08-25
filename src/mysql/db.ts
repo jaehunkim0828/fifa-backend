@@ -1,10 +1,10 @@
-import { createPool } from 'mysql2';
-import SQ from 'sequelize';
+import SQ from "sequelize";
 
-import { config } from '../config';
+import { config } from "../config";
 
 const { host, username, database, password } = config.db;
 
 export const sequelize = new SQ.Sequelize(database, username, password, {
-    host, dialect: 'mysql'
-})
+  host,
+  dialect: "mysql",
+});

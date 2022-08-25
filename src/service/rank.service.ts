@@ -1,8 +1,8 @@
-import { Player, Position, Rank, Season } from "../mysql/schema";
 import * as rankRepository from "../repository/rank";
 import { RankInput } from "../types/rank/rank.crud";
 import players from "../players.json";
 import { Op } from "sequelize";
+import { Player, Rank } from "../mysql/schema";
 
 export async function getRankById(spid: string, po: string) {
   return rankRepository.findRankByIdAndPostion(spid, po);
@@ -57,12 +57,12 @@ export async function createRank(rankInput: RankInput): Promise<void> {
     return +(a + b).toFixed(12);
   }
 
-  function calculateAverage(prevData: number, newData: number) {
+  function calculateAverage(prevData: number, newData: number): string {
     return (
       Math.round(
-        (Math.round(addDecimalPoint(prevData * prev.matchCount, newData * +matchCount)) / (prev.matchCount + +matchCount)) * 10000
+        (Math.round(addDecimalPoint(prevData * +prev.matchCount, newData * +matchCount)) / (+prev.matchCount + +matchCount)) * 10000
       ) / 10000
-    );
+    ).toString();
   }
 
   // 지금 날짜 보다 전 날짜면 update, 없으면 create
@@ -78,7 +78,7 @@ export async function createRank(rankInput: RankInput): Promise<void> {
       dribbleTry,
       effectiveShoot,
       goal,
-      matchCount,
+      matchCount: +matchCount,
       passSuccess,
       passTry,
       shoot,
@@ -88,18 +88,18 @@ export async function createRank(rankInput: RankInput): Promise<void> {
   } else if (prev.createDate < createDate) {
     await Rank.update(
       {
-        assist: calculateAverage(prev.assist, +assist),
-        block: calculateAverage(prev.block, +block),
-        dribble: calculateAverage(prev.dribble, +dribble),
-        dribbleSuccess: calculateAverage(prev.dribbleSuccess, +dribbleSuccess),
-        dribbleTry: calculateAverage(prev.dribbleTry, +dribbleTry),
-        effectiveShoot: calculateAverage(prev.effectiveShoot, +effectiveShoot),
-        goal: calculateAverage(prev.goal, +goal),
-        passSuccess: calculateAverage(prev.passSuccess, +passSuccess),
-        passTry: calculateAverage(prev.passTry, +passTry),
-        shoot: calculateAverage(prev.shoot, +shoot),
-        tackle: calculateAverage(prev.tackle, +tackle),
-        matchCount: prev.matchCount + matchCount,
+        assist: calculateAverage(+prev.assist, +assist),
+        block: calculateAverage(+prev.block, +block),
+        dribble: calculateAverage(+prev.dribble, +dribble),
+        dribbleSuccess: calculateAverage(+prev.dribbleSuccess, +dribbleSuccess),
+        dribbleTry: calculateAverage(+prev.dribbleTry, +dribbleTry),
+        effectiveShoot: calculateAverage(+prev.effectiveShoot, +effectiveShoot),
+        goal: calculateAverage(+prev.goal, +goal),
+        passSuccess: calculateAverage(+prev.passSuccess, +passSuccess),
+        passTry: calculateAverage(+prev.passTry, +passTry),
+        shoot: calculateAverage(+prev.shoot, +shoot),
+        tackle: calculateAverage(+prev.tackle, +tackle),
+        matchCount: prev.matchCount + +matchCount,
         createDate,
       },
       {

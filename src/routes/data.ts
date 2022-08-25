@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { position, season } from "../InsertData";
 import { getFifaApi } from "../method";
-import { Position, Season, Player } from "../mysql/schema";
+import { Player, Position, Season } from "../mysql/schema";
 
 const dataRouter = express.Router();
 
@@ -9,12 +9,12 @@ let gett: any[];
 const result: any[] = [];
 dataRouter.route("/position").get((req: Request, res: Response, next: NextFunction) => {
   position.forEach(async (po) => {
-    await Position.create({ spposition: po.position, desc: po.name });
+    await Position.create({ spposition: +po.position, desc: po.name });
   });
 });
 dataRouter.route("/season").get((req: Request, res: Response, next: NextFunction) => {
   season.forEach(async (sea) => {
-    await Season.create({ seasonId: sea.id, className: sea.name, seasonImg: sea.seasonId });
+    await Season.create({ seasonId: +sea.id, className: sea.name, seasonImg: sea.seasonId });
   });
 });
 

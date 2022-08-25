@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { Player, Rank, Season } from "../mysql/schema";
 
 import * as rankService from "../service/rank.service";
 import { RankType } from "../types/rank/rank";

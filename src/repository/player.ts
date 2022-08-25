@@ -1,5 +1,5 @@
-import { Player, Rank, Season } from "../mysql/schema";
 import SQ from "sequelize";
+import { Player, Rank, Season } from "../mysql/schema";
 
 const Op = SQ.Op;
 
@@ -103,5 +103,41 @@ export async function totalPlayerCount(names: string[]) {
         };
       }),
     },
+  });
+}
+
+/** 경기수가 가장 많은 포지션중 패스 시도가 가장많은 포지션
+   * @return: {
+        "id": nubmer,
+        "name": string,
+        "positionId": null | number,
+        "ranks": [
+            {
+                "matchCount": number,
+                "position": number
+            }
+        ]
+    }
+  */
+export async function findPostionByMc(spid: string) {
+  return Player.findOne({
+    attributes: ["id", "name", "positionId"],
+    where: {
+      id: spid,
+    },
+    include: [
+      {
+        model: Rank,
+        as: "ranks",
+        required: true,
+        attributes: ["matchCount", "position"],
+        separate: true,
+        limit: 1,
+        order: [
+          ["matchCount", "DESC"],
+          ["passTry", "DESC"],
+        ],
+      },
+    ],
   });
 }

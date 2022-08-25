@@ -1,5 +1,5 @@
 export class Ranks {
-  spidId: string;
+  spidId: number;
   name: string;
   position: string;
   shoot: string;
@@ -13,6 +13,6 @@ export class Ranks {
   passTry: string;
   block: string;
   tackle: string;
-  matchCount: string;
+  matchCount: number;
   createDate: string;
 }

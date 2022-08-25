@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import SQ from "sequelize";
 
 import * as playerService from "../service/player.service";
 
@@ -17,14 +16,14 @@ export async function getPlayerByName(req: Request, res: Response, next: NextFun
   }
 }
 
-export async function updateSeason(req: Request, res: Response, next: NextFunction) {
-  try {
-    await playerService.updateSeason();
-    res.status(200).send("season");
-  } catch (err) {
-    res.status(404).send(err);
-  }
-}
+// export async function updateSeason(req: Request, res: Response, next: NextFunction) {
+//   try {
+//     await playerService.updateSeason();
+//     res.status(200).send("season");
+//   } catch (err) {
+//     res.status(404).send(err);
+//   }
+// }
 
 export async function getPlayerById(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
@@ -58,6 +57,17 @@ export async function countAllPlayer(req: Request, res: Response, next: NextFunc
     const totalRankPlayer = await playerService.totalPlayerCount(name);
 
     res.status(200).send(`${totalRankPlayer.rows.length}`);
+  } catch (err) {
+    if (err instanceof Error) res.status(404).send(err);
+  }
+}
+
+/**선수에게 main포지션 update, create해주기 */
+export async function updatePosition(req: Request, res: Response, next: NextFunction) {
+  const { spid } = req.params;
+  try {
+    const position = await playerService.updatePosition(spid);
+    res.status(201).send(position);
   } catch (err) {
     if (err instanceof Error) res.status(404).send(err);
   }
