@@ -1,5 +1,6 @@
 import SQ from "sequelize";
 import { PlayerInstance } from "../models/player.model";
+import Position from "../models/position.model";
 import { Player, Rank, Season } from "../mysql/schema";
 
 const Op = SQ.Op;
@@ -66,6 +67,11 @@ export async function getplayerAllSeason(name: string, count: string, current_pa
         attributes: ["classname", "seasonImg"],
         model: Season,
         required: true,
+      },
+      {
+        attributes: ["desc"],
+        model: Position,
+        required: false,
       },
     ],
   }).then((data) => {

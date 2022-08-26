@@ -54,6 +54,11 @@ export async function findRankWithPlayer(current_page: number, count: number) {
         model: Season,
         attributes: ["className", "seasonImg"],
       },
+      {
+        model: Position,
+        attributes: ["desc"],
+        required: false,
+      },
     ],
   }).then((data) => {
     const deepCopyData = JSON.parse(JSON.stringify(data));
