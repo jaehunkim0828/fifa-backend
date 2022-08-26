@@ -42,13 +42,15 @@ export async function findRankWithPlayer(current_page: number, count: number) {
   if (current_page > 1) offset = limit * (current_page - 1);
 
   return Player.findAll({
-    attributes: ["id", "name"],
+    attributes: {
+      include: ["id", "name", [SQ.fn("Sum", SQ.col("ranks.matchCount")), "total"]],
+    },
     include: [
       {
         model: Rank,
         as: "ranks",
         required: true,
-        attributes: ["matchCount"],
+        attributes: [],
       },
       {
         model: Season,
@@ -60,24 +62,9 @@ export async function findRankWithPlayer(current_page: number, count: number) {
         required: false,
       },
     ],
-  }).then((data) => {
-    const deepCopyData = JSON.parse(JSON.stringify(data));
-
-    deepCopyData.map((player: { ranks: any; count: number }) => {
-      let totalCount = 0;
-      player.ranks.forEach((count: any) => {
-        totalCount += count.matchCount;
-      });
-      player.count = totalCount;
-      delete player.ranks;
-    });
-
-    deepCopyData.sort(function (a: any, b: any) {
-      return b.count - a.count;
-    });
-
-    return deepCopyData.slice(offset, offset + count);
-  });
+    order: [[SQ.fn("Sum", SQ.col("ranks.matchCount")), "DESC"]],
+    group: ["spids.id"],
+  }).then((data) => data.slice(offset, offset + limit));
 }
 
 export async function totalRankCount() {
