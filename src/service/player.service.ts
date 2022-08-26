@@ -33,7 +33,9 @@ export async function updatePosition(spid: string) {
   //가장 많은 플레이수와 패스시도가 많은 포지션의 선수 데이터 가져오기
   const player = await playerRepository.findPostionByMc(spid);
 
-  if (!player) throw new Error("선수 데이터가 존재하지않습니다.");
+  if (!player) throw new Error("없는 선수입니다.");
+  const rawPlayer = player.getDataValue("ranks");
+  if (!rawPlayer) throw new Error("선수 데이터가 존재하지 않습니다.");
 
-  return player;
+  return await playerRepository.updatePosition(rawPlayer[0].position, player.get().id);
 }

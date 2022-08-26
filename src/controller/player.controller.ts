@@ -62,12 +62,16 @@ export async function countAllPlayer(req: Request, res: Response, next: NextFunc
   }
 }
 
-/**선수에게 main포지션 update, create해주기 */
+/**선수에게 main포지션 update, create해주기
+ * @params spid
+ * @return boolean
+ */
 export async function updatePosition(req: Request, res: Response, next: NextFunction) {
   const { spid } = req.params;
   try {
+    /**업데이트 횟수 체크 ex) [1] */
     const position = await playerService.updatePosition(spid);
-    res.status(201).send(position);
+    res.status(201).send(!!position[0]);
   } catch (err) {
     if (err instanceof Error) res.status(404).send(err);
   }

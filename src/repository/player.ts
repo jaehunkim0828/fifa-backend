@@ -1,4 +1,5 @@
 import SQ from "sequelize";
+import { PlayerInstance } from "../models/player.model";
 import { Player, Rank, Season } from "../mysql/schema";
 
 const Op = SQ.Op;
@@ -119,7 +120,7 @@ export async function totalPlayerCount(names: string[]) {
         ]
     }
   */
-export async function findPostionByMc(spid: string) {
+export async function findPostionByMc(spid: string): Promise<PlayerInstance | null> {
   return Player.findOne({
     attributes: ["id", "name", "positionId"],
     where: {
@@ -140,4 +141,8 @@ export async function findPostionByMc(spid: string) {
       },
     ],
   });
+}
+/** 특정 선수 메인 포지션 업데이트해주기*/
+export async function updatePosition(position: string, id: number) {
+  return Player.update({ positionId: position }, { where: { id } });
 }
