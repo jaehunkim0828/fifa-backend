@@ -1,16 +1,19 @@
 import { DataTypes, Model, BuildOptions } from "sequelize";
+import { Ranks } from "../entities/rank.entities";
 
 import { sequelize } from "../mysql/db";
-import { RankModel } from "./rank.model";
-import { SeasonModel } from "./season.modle";
+import { RankInstance } from "./rank.model";
+import { SeasonModel } from "./season.model";
 interface PlayerAttributes {
   id: number;
   name: string;
-  ranks?: RankModel;
+  positionId: string;
+  ranks: Ranks[] | [];
   seasons?: SeasonModel;
 }
-interface PlayerInstance extends Model<PlayerAttributes>, PlayerAttributes {}
-type Player = typeof Model & {
+export interface PlayerInstance extends Model<PlayerAttributes>, PlayerAttributes {}
+
+export type PlayerModel = typeof Model & {
   new (values?: object, options?: BuildOptions): PlayerInstance;
 };
 
@@ -28,6 +31,6 @@ const Player = sequelize.define(
     },
   },
   { timestamps: false }
-) as Player;
+) as PlayerModel;
 
 export default Player;

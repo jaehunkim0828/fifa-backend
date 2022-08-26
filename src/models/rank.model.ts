@@ -3,10 +3,10 @@ import { Ranks } from "../entities/rank.entities";
 
 import { sequelize } from "../mysql/db";
 
-interface RankAttributes extends Ranks {
+export interface RankAttributes extends Ranks {
   readonly id?: number;
 }
-interface RankInstance extends Model<RankAttributes>, RankAttributes {}
+export interface RankInstance extends Model<RankAttributes>, RankAttributes {}
 export type RankModel = typeof Model & {
   new (values?: object, options?: BuildOptions): RankInstance;
 };

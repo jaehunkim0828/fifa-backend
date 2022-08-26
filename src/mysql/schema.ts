@@ -1,7 +1,7 @@
-import PlayerModel from "../models/Player.model";
+import PlayerModel from "../models/player.model";
 import PositionModel from "../models/position.model";
-import RankModel from "../models/Rank.model";
-import SeasonModel from "../models/season.modle";
+import RankModel from "../models/rank.model";
+import SeasonModel from "../models/season.model";
 
 export const Player = PlayerModel;
 
