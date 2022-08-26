@@ -4,6 +4,7 @@ import { sequelize } from "../mysql/db";
 interface PositionAttributes {
   spposition?: number;
   desc?: string;
+  part?: string;
 }
 interface PositionInstance extends Model<PositionAttributes>, PositionAttributes {}
 export type PositionModel = typeof Model & {
@@ -19,6 +20,10 @@ const Position = sequelize.define(
       primaryKey: true,
     },
     desc: {
+      type: DataTypes.STRING(64),
+      allowNull: false,
+    },
+    part: {
       type: DataTypes.STRING(64),
       allowNull: false,
     },

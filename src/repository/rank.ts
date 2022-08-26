@@ -56,7 +56,7 @@ export async function findRankWithPlayer(current_page: number, count: number) {
       },
       {
         model: Position,
-        attributes: ["desc"],
+        attributes: ["desc", "part"],
         required: false,
       },
     ],

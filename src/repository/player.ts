@@ -69,7 +69,7 @@ export async function getplayerAllSeason(name: string, count: string, current_pa
         required: true,
       },
       {
-        attributes: ["desc"],
+        attributes: ["desc", "part"],
         model: Position,
         required: false,
       },
