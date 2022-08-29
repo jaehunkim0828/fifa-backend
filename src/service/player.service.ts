@@ -48,7 +48,7 @@ export async function createMainPositionEvery() {
 
     const isToTime = (date: Date) => {
       const now = date.getHours();
-      if (now === 19) return true;
+      if (now === 15) return true;
       return false;
     };
     if (isToTime(new Date())) {
