@@ -76,3 +76,13 @@ export async function updatePosition(req: Request, res: Response, next: NextFunc
     if (err instanceof Error) res.status(404).send(err);
   }
 }
+
+export async function createMainPositionEvery(req: Request, res: Response, next: NextFunction) {
+  try {
+    await playerService.createMainPositionEvery();
+    res.status(201).send("done");
+  } catch (err) {
+    console.error(err);
+    if (err instanceof Error) res.status(404).send(err);
+  }
+}

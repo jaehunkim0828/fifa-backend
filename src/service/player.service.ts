@@ -1,4 +1,5 @@
 import * as playerRepository from "../repository/player";
+import players from "../players.json";
 
 // export async function updateSeason() {
 //   const season = {};
@@ -35,7 +36,32 @@ export async function updatePosition(spid: string) {
 
   if (!player) throw new Error("없는 선수입니다.");
   const rawPlayer = player.getDataValue("ranks");
-  if (!rawPlayer) throw new Error("선수 데이터가 존재하지 않습니다.");
+  if (!rawPlayer.length) throw new Error("선수 데이터가 존재하지 않습니다.");
 
   return await playerRepository.updatePosition(rawPlayer[0].position, player.get().id);
+}
+
+export async function createMainPositionEvery() {
+  const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
+  while (true) {
+    console.log(new Date().toLocaleString());
+
+    const isToTime = (date: Date) => {
+      const now = date.getHours();
+      if (now === 19) return true;
+      return false;
+    };
+    if (isToTime(new Date())) {
+      for (let i = 0; i < players.selectedPlayer.length; i += 1) {
+        const player = players.selectedPlayer[i];
+        const result = await updatePosition(player.spid + "");
+        console.log(`${player.name}의 선수 포지션이 ${!!result[0] ? "변경되었습니다" : "변경되지 않았습니다."}`);
+        await wait(100);
+      }
+    }
+    await wait(600000);
+    if (new Date().getMonth() + 1 === 9) {
+      break;
+    }
+  }
 }
