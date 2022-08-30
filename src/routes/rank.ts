@@ -1,5 +1,4 @@
 import express from "express";
-import rootRouter from ".";
 
 import * as rankController from "../controller/rank.controller";
 

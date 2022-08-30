@@ -16,22 +16,32 @@ export async function findRankByIdAndPostion(spid: string, po: string) {
 
   return Rank.findAll({
     attributes: [
-      [SQ.fn("sum", SQ.col("matchCount")), "matchCount"],
-      [SQ.fn("AVG", SQ.col("assist")), "assist"],
-      [SQ.fn("AVG", SQ.col("block")), "block"],
-      [SQ.fn("AVG", SQ.col("dribble")), "dribble"],
-      [SQ.fn("AVG", SQ.col("dribbleSuccess")), "dribbleSuccess"],
-      [SQ.fn("AVG", SQ.col("dribbleTry")), "dribbleTry"],
-      [SQ.fn("AVG", SQ.col("shoot")), "shoot"],
-      [SQ.fn("AVG", SQ.col("effectiveShoot")), "effectiveShoot"],
-      [SQ.fn("AVG", SQ.col("goal")), "goal"],
-      [SQ.fn("AVG", SQ.col("passSuccess")), "passSuccess"],
-      [SQ.fn("AVG", SQ.col("passTry")), "passTry"],
-      [SQ.fn("AVG", SQ.col("tackle")), "tackle"],
+      "matchCount",
+      "assist",
+      "block",
+      "dribble",
+      "dribbleSuccess",
+      "dribbleTry",
+      "shoot",
+      "effectiveShoot",
+      "goal",
+      "passSuccess",
+      "passTry",
+      "tackle",
     ],
     where: {
       spidId: spid,
       position,
+    },
+    include: {
+      model: Player,
+      attributes: ["id"],
+      include: [
+        {
+          model: Season,
+          attributes: ["seasonImg"],
+        },
+      ],
     },
   });
 }

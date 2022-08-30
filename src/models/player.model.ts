@@ -3,13 +3,14 @@ import { Ranks } from "../entities/rank.entities";
 
 import { sequelize } from "../mysql/db";
 import { RankInstance } from "./rank.model";
-import { SeasonModel } from "./season.model";
-interface PlayerAttributes {
+import { SeasonAttributes } from "./season.model";
+
+export interface PlayerAttributes {
   id: number;
   name: string;
   positionId: string;
   ranks: Ranks[] | [];
-  seasons?: SeasonModel;
+  season?: SeasonAttributes;
 }
 export interface PlayerInstance extends Model<PlayerAttributes>, PlayerAttributes {}
 

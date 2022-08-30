@@ -2,9 +2,12 @@ import { DataTypes, Model, BuildOptions } from "sequelize";
 import { Ranks } from "../entities/rank.entities";
 
 import { sequelize } from "../mysql/db";
+import { PlayerAttributes, PlayerModel } from "./player.model";
 
 export interface RankAttributes extends Ranks {
   readonly id?: number;
+  totalCount?: any;
+  spid?: PlayerAttributes;
 }
 export interface RankInstance extends Model<RankAttributes>, RankAttributes {}
 export type RankModel = typeof Model & {

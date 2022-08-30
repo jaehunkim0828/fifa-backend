@@ -2,7 +2,7 @@ import { DataTypes, Model, BuildOptions } from "sequelize";
 
 import { sequelize } from "../mysql/db";
 
-interface SeasonAttributes {
+export interface SeasonAttributes {
   seasonId?: number;
   className?: string;
   seasonImg?: string;
