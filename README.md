@@ -16,3 +16,9 @@ $ yarn start // production 환경
   PASSWORD // 비밀번호
   DATABASE // 데이터베이스 
 ```
+
+
+## ERD Cloud
+<img width="733" alt="스크린샷 2022-09-03 오전 1 55 27" src="https://user-images.githubusercontent.com/67530239/188202304-71ac693d-26f8-4b8e-b42b-eb196abe814b.png">
+
+
