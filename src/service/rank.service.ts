@@ -193,7 +193,7 @@ export async function createRanksEvery() {
       }
     }
     await wait(10000);
-    if (new Date().getMonth() + 1 === 9) {
+    if (new Date().getMonth() + 1 === 11) {
       break;
     }
   }
