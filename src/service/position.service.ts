@@ -46,3 +46,9 @@ export async function findPositionAvg(part: string) {
     matchCount: matchCount,
   };
 }
+
+export async function findPartByPlayer(spid: string) {
+  const player = await playerRepository.findPartByPlayer(spid);
+  if (!player?.position) return "미정";
+  return { part: player?.position.part, desc: player?.position.desc };
+}

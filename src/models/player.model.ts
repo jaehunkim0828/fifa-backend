@@ -2,6 +2,7 @@ import { DataTypes, Model, BuildOptions } from "sequelize";
 import { Ranks } from "../entities/rank.entities";
 
 import { sequelize } from "../mysql/db";
+import { PositionAttributes } from "./position.model";
 import { RankInstance } from "./rank.model";
 import { SeasonAttributes } from "./season.model";
 
@@ -11,6 +12,7 @@ export interface PlayerAttributes {
   positionId: string;
   ranks: Ranks[] | [];
   season?: SeasonAttributes;
+  position?: PositionAttributes;
 }
 export interface PlayerInstance extends Model<PlayerAttributes>, PlayerAttributes {}
 

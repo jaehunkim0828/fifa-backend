@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { config } from "./config";
+import { config } from "./config/config";
 
 export async function getFifaApi(url: string) {
   return await axios.get(url, {

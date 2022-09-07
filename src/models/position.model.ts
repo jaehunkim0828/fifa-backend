@@ -1,7 +1,7 @@
 import { DataTypes, Model, BuildOptions } from "sequelize";
 
 import { sequelize } from "../mysql/db";
-interface PositionAttributes {
+export interface PositionAttributes {
   spposition?: number;
   desc?: string;
   part?: string;

@@ -37,3 +37,18 @@ export async function findPositionAvg(part: string) {
     ],
   });
 }
+
+export async function findPartByPlayer(spid: string) {
+  return await Player.findOne({
+    attributes: [],
+    where: {
+      id: spid,
+    },
+    include: [
+      {
+        model: Position,
+        attributes: ["part", "desc"],
+      },
+    ],
+  });
+}
