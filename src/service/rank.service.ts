@@ -188,7 +188,6 @@ export async function createRanksEvery() {
           ability.data[i].name = name?.get().name;
 
           await createRank(ability.data[i]);
-          await wait(100);
         }
       }
     }
