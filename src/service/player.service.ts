@@ -1,5 +1,8 @@
 import * as playerRepository from "../repository/player";
 import players from "../players.json";
+import sanitizeHtml from "sanitize-html";
+import { load } from "cheerio";
+import puppeteer from "puppeteer";
 
 // export async function updateSeason() {
 //   const season = {};
@@ -23,6 +26,24 @@ export async function findPlayers(name: string, current_page: string, count: str
 
 export async function findPlayerById(id: string) {
   return await playerRepository.getPlayerInfo(id);
+}
+
+export async function findPlayerPrice(spid: string, grade: number) {
+  // 크롤링하는 부분
+  const brower = await puppeteer.launch({ headless: true });
+  const page = await brower.newPage();
+
+  await page.goto(`https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1strong=3`);
+
+  const content = await page.content();
+
+  const $ = load(content, { decodeEntities: true });
+
+  const playerPrice = $(content).find("#PlayerPriceGraph > .header > .add_info > .txt > strong").text();
+
+  await brower.close();
+
+  return playerPrice;
 }
 
 export async function totalPlayerCount(name: string) {

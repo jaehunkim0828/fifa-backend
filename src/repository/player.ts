@@ -136,6 +136,7 @@ export async function findPostionByMc(spid: string): Promise<PlayerInstance | nu
     ],
   });
 }
+
 /** 특정 선수 메인 포지션 업데이트해주기*/
 export async function updatePosition(position: string, id: number) {
   return Player.update({ positionId: position }, { where: { id } });

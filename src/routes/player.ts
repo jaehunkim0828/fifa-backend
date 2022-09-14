@@ -11,5 +11,6 @@ playerRouter.route("/:id").get(playerController.getPlayerById);
 playerRouter.route("/spid/:name").get(playerController.getPlayerByName);
 playerRouter.route("/image/:spid").get(playerController.findPlayerImage);
 playerRouter.route("/count/:name").get(playerController.countAllPlayer);
+playerRouter.route("/price/:spid").get(playerController.findPlayerPrice);
 
 export default playerRouter;

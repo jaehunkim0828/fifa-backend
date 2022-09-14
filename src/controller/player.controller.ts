@@ -78,6 +78,16 @@ export async function findPlayerImage(req: Request, res: Response, next: NextFun
   }
 }
 
+export async function findPlayerPrice(req: Request, res: Response, next: NextFunction) {
+  const { spid } = req.params;
+  try {
+    const result = await playerService.findPlayerPrice(spid, 1);
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+}
+
 export async function countAllPlayer(req: Request, res: Response, next: NextFunction) {
   const { name } = req.params;
   try {
