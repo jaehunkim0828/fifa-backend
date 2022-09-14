@@ -84,7 +84,6 @@ export async function findPlayerPrice(req: Request, res: Response, next: NextFun
     const result = await playerService.findPlayerPrice(spid, 1);
     res.status(200).send(result);
   } catch (err) {
-    console.log(err);
     res.status(404).send(err);
   }
 }

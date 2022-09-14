@@ -30,23 +30,16 @@ export async function findPlayerById(id: string) {
 
 export async function findPlayerPrice(spid: string, grade: number) {
   // 크롤링하는 부분
-  const brower = await puppeteer.launch({ headless: true });
-  console.log(brower);
+  const brower = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
   const page = await brower.newPage();
-  console.log(page);
 
   await page.goto(`https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1strong=1`);
 
-  console.log(1);
-
   const content = await page.content();
-
-  console.log(content);
 
   const $ = load(content, { decodeEntities: true });
 
   const playerPrice = $(content).find("#PlayerPriceGraph > .header > .add_info > .txt > strong").text();
-  console.log(playerPrice);
 
   await brower.close();
 
