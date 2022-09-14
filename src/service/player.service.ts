@@ -33,13 +33,16 @@ export async function findPlayerPrice(spid: string, grade: number) {
   const brower = await puppeteer.launch({ headless: true });
   const page = await brower.newPage();
 
-  await page.goto(`https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1strong=3`);
+  await page.goto(`https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1strong=1`);
 
   const content = await page.content();
+
+  console.log(content);
 
   const $ = load(content, { decodeEntities: true });
 
   const playerPrice = $(content).find("#PlayerPriceGraph > .header > .add_info > .txt > strong").text();
+  console.log(playerPrice);
 
   await brower.close();
 
