@@ -81,6 +81,7 @@ export async function findPlayerImage(req: Request, res: Response, next: NextFun
 export async function findPlayerPrice(req: Request, res: Response, next: NextFunction) {
   const { spid } = req.params;
   try {
+    console.log(spid);
     const result = await playerService.findPlayerPrice(spid, 1);
     res.status(200).send(result);
   } catch (err) {
