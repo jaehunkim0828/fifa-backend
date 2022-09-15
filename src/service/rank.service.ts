@@ -213,6 +213,7 @@ export async function totalRankCount() {
 }
 
 export async function getPlayerPrice(page: Page, name: string, seasonId: string, spid: string) {
+  const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
   await Promise.all([
     page.goto(`https://fifaonline4.nexon.com/DataCenter/index?strSeason=%2C${seasonId}%2C&strPlayerName=${name}`, {
       waitUntil: "networkidle2",
@@ -230,6 +231,7 @@ export async function getPlayerPrice(page: Page, name: string, seasonId: string,
     // price
     const isValue = await valueRepository.findValueByRatingAndSpid(spid, rating);
 
+    console.log(isValue);
     if (isValue) {
       await valueRepository.updateValue(bp, spid);
       console.log(`${name}(${rating}+): ${bp} 업데이트 완료`);
@@ -237,5 +239,6 @@ export async function getPlayerPrice(page: Page, name: string, seasonId: string,
       await valueRepository.createValue(rating, bp, spid);
       console.log(`${name}(${rating}+): ${bp} 생성 완료`);
     }
+    await wait(100);
   }
 }
