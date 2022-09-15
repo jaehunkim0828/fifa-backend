@@ -4,13 +4,18 @@ import { sequelize } from "./mysql/db";
 import rootRouter from "./routes";
 import cors from "cors";
 import path from "path";
+import { config } from "./config/config";
 
 const port = 8080;
 const app = express();
 
 app.use(express.json());
 app.use(morganMiddleware);
-app.use(cors());
+app.use(
+  cors({
+    origin: [config.http.front],
+  })
+);
 app.use(express.static(path.join(path.resolve(), "./src/public")));
 
 app.use("/", rootRouter);
