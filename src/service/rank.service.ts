@@ -168,7 +168,7 @@ export async function createRanksEvery() {
       if (now === "00:00") return true;
       return false;
     };
-    if (true) {
+    if (isToTime(new Date())) {
       /* 해주는 일
         1. Rank 데이터 추가해주기 
         2. 선수 가격 추가해주기
