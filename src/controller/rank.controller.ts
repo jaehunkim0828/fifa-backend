@@ -119,16 +119,3 @@ export async function countAllRank(req: Request, res: Response, next: NextFuncti
     if (err instanceof Error) res.status(404).send(err);
   }
 }
-
-// export async function getPrice(req: Request, res: Response, next: NextFunction) {
-//   try {
-//     const brower = await puppeteer.launch({ headless: true });
-//     const page = await brower.newPage();
-//     const result = await rankService.getPlayerPrice(page, "손흥민", "258", "258200104");
-//     brower.close();
-
-//     res.status(200).send(result);
-//   } catch (err) {
-//     res.status(404).send(err);
-//   }
-// }
