@@ -21,5 +21,6 @@ export const config = {
   http: {
     domain: required("DOMAIN"),
     port: required("PORT"),
+    front: required("FRONT_URL"),
   },
 };
