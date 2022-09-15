@@ -9,5 +9,6 @@ rankRouter.route("/all").get(rankController.getAllRank);
 rankRouter.route("/player/count").get(rankController.countAllRank);
 rankRouter.route("/po").get(rankController.getPosition);
 rankRouter.route("/potential").post(rankController.createPlayerRank).get(rankController.getPlayerTotalScorecard);
+// rankRouter.route("/test").get(rankController.getPrice);
 
 export default rankRouter;

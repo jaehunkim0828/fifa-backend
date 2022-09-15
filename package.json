@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@types/morgan": "^1.9.3",
+    "@types/puppeteer": "^5.4.6",
     "axios": "^0.27.2",
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",

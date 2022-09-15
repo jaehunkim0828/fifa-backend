@@ -1,8 +1,12 @@
+import { Op } from "sequelize";
+import { load } from "cheerio";
+
 import * as rankRepository from "../repository/rank";
+import * as valueRepository from "../repository/value";
 import { RankInput } from "../types/rank/rank.crud";
 import players from "../players.json";
-import { Op } from "sequelize";
-import { Player, Rank } from "../mysql/schema";
+import { Rank, Value } from "../mysql/schema";
+import puppeteer, { Page } from "puppeteer";
 
 export async function getRankById(spid: string, po: string) {
   const partOfRank = await rankRepository.findRankByIdAndPostion(spid, po);
@@ -161,36 +165,42 @@ export async function createRanksEvery() {
 
     const isToTime = (date: Date) => {
       const now = date.toTimeString().substring(0, 5);
-      if (now === "04:00" || now === "11:01" || now === "16:00" || now == "12:10") return true;
+      if (now === "22:45") return true;
       return false;
     };
     if (isToTime(new Date())) {
+      /* 해주는 일
+        1. Rank 데이터 추가해주기 
+        2. 선수 가격 추가해주기
+      */
+      const brower = await puppeteer.launch({ headless: true });
+      const page = await brower.newPage();
+
       for (let i = 0; i < players.selectedPlayer.length; i += 1) {
+        const { spid, name } = players.selectedPlayer[i];
         const playerArr: string[] = [];
 
         for (let j = 0; j < 26; j += 1) {
-          playerArr.push(`{"id":${players.selectedPlayer[i].spid},"po":${j}}`);
+          playerArr.push(`{"id":${spid},"po":${j}}`);
         }
 
         let stringify = `[${playerArr}]`;
-        const name = await Player.findOne({
-          attributes: ["name"],
-          where: {
-            id: players.selectedPlayer[i].spid,
-          },
-        });
 
         const ability = await rankRepository.getrankerInfo(50, stringify);
         ability.data.sort(
           (a: { status: { matchCount: number } }, b: { status: { matchCount: number } }) => b.status.matchCount - a.status.matchCount
         );
         for (let i = 0; i < ability.data.length; i += 1) {
-          ability.data[i].name = name?.get().name;
+          ability.data[i].name = name;
 
           await createRank(ability.data[i]);
         }
+        // 가격 추가해주기
+        await getPlayerPrice(page, name, spid.toString().substring(0, 3), spid.toString());
       }
+      await brower.close();
     }
+
     await wait(10000);
     if (new Date().getMonth() + 1 === 11) {
       break;
@@ -200,4 +210,32 @@ export async function createRanksEvery() {
 
 export async function totalRankCount() {
   return rankRepository.totalRankCount();
+}
+
+export async function getPlayerPrice(page: Page, name: string, seasonId: string, spid: string) {
+  await Promise.all([
+    page.goto(`https://fifaonline4.nexon.com/DataCenter/index?strSeason=%2C${seasonId}%2C&strPlayerName=${name}`, {
+      waitUntil: "networkidle2",
+    }),
+    page.waitForNavigation(),
+    page.waitForSelector(".span_bp1"),
+  ]);
+
+  const content = await page.content();
+
+  const $ = load(content);
+
+  for (let rating = 1; rating <= 10; rating += 1) {
+    let bp = $(content).find(`.span_bp${rating}`).text();
+    // price
+    const isValue = await valueRepository.findValueByRatingAndSpid(spid, rating);
+
+    if (isValue) {
+      await valueRepository.updateValue(bp, spid);
+      console.log(`${name}(${rating}+): ${bp} 업데이트 완료`);
+    } else {
+      await valueRepository.createValue(rating, bp, spid);
+      console.log(`${name}(${rating}+): ${bp} 생성 완료`);
+    }
+  }
 }

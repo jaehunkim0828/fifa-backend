@@ -30,10 +30,10 @@ export async function findPlayerById(id: string) {
 
 export async function findPlayerPrice(spid: string, grade: number) {
   // 크롤링하는 부분
-  const brower = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+  const brower = await puppeteer.launch({ headless: true });
   const page = await brower.newPage();
 
-  await page.goto(`https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1strong=1`);
+  await Promise.all([page.goto(`https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1strong=1`), page.waitForNavigation()]);
 
   const content = await page.content();
 
@@ -77,7 +77,6 @@ export async function createMainPositionEvery() {
         const player = players.selectedPlayer[i];
         const result = await updatePosition(player.spid + "");
         console.log(`${player.name}의 선수 포지션이 ${!!result[0] ? "변경되었습니다" : "변경되지 않았습니다."}`);
-        await wait(100);
       }
     }
     await wait(600000);

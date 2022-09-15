@@ -88,3 +88,12 @@ export async function totalRankCount() {
     ],
   });
 }
+
+export async function findNameById(id: number) {
+  return Player.findOne({
+    attributes: ["name"],
+    where: {
+      id,
+    },
+  });
+}
