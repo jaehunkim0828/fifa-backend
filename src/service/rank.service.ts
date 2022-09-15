@@ -165,7 +165,7 @@ export async function createRanksEvery() {
 
     const isToTime = (date: Date) => {
       const now = date.toTimeString().substring(0, 5);
-      if (now === "13:55") return true;
+      if (now === "00:00") return true;
       return false;
     };
     if (true) {
@@ -239,6 +239,6 @@ export async function getPlayerPrice(page: Page, name: string, seasonId: string,
       await valueRepository.createValue(rating, bp, spid);
       console.log(`${name}(${rating}+): ${bp} 생성 완료`);
     }
-    await wait(100);
   }
+  await wait(5000);
 }
