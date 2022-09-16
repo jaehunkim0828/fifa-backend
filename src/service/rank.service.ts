@@ -176,6 +176,8 @@ export async function createRanksEvery() {
       const brower = await puppeteer.launch({ headless: true });
       const page = await brower.newPage();
 
+      page.setDefaultNavigationTimeout(0);
+
       for (let i = 0; i < players.selectedPlayer.length; i += 1) {
         const { spid, name } = players.selectedPlayer[i];
         const playerArr: string[] = [];
