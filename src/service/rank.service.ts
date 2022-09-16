@@ -230,8 +230,6 @@ export async function getPlayerPrice(page: Page, name: string, seasonId: string,
     let bp = $(content).find(`.span_bp${rating}`).text();
     // price
     const isValue = await valueRepository.findValueByRatingAndSpid(spid, rating);
-
-    console.log(isValue);
     if (isValue) {
       await valueRepository.updateValue(bp, spid);
       console.log(`${name}(${rating}+): ${bp} 업데이트 완료`);
