@@ -176,8 +176,6 @@ export async function createRanksEvery() {
       const brower = await puppeteer.launch({ headless: true });
       const page = await brower.newPage();
 
-      page.setDefaultNavigationTimeout(0);
-
       for (let i = 0; i < players.selectedPlayer.length; i += 1) {
         const { spid, name } = players.selectedPlayer[i];
         const playerArr: string[] = [];
@@ -219,6 +217,7 @@ export async function getPlayerPrice(page: Page, name: string, seasonId: string,
   await Promise.all([
     page.goto(`https://fifaonline4.nexon.com/DataCenter/index?strSeason=%2C${seasonId}%2C&strPlayerName=${name}`, {
       waitUntil: "networkidle2",
+      timeout: 0,
     }),
     page.waitForNavigation(),
     page.waitForSelector(".span_bp1"),
