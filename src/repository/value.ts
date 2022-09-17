@@ -14,7 +14,7 @@ export async function findValueByRatingAndSpid(spid: string, rating: number) {
       spidId: spid,
       rating,
     },
-    attributes: ["id"],
+    attributes: ["id", "price"],
   });
 }
 
