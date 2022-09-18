@@ -19,7 +19,6 @@ async function getPriceUsingCrawling(spid: string, rating: number) {
   const player = await playerRepository.getPlayerInfo(spid);
 
   await Promise.all([
-    page.waitForNavigation(),
     page.goto(`https://fifaonline4.nexon.com/DataCenter/index?strSeason=%2C${spid.substring(0, 3)}%2C&strPlayerName=${player?.name}`, {
       waitUntil: "networkidle2",
       timeout: 0,
