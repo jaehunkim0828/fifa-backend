@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import puppeteer, { Page } from "puppeteer";
+import { config } from "../config/config";
+import { sendErrorAtGmail } from "../external/mail";
 
 import * as rankService from "../service/rank.service";
 import { RankType } from "../types/rank/rank";
@@ -79,7 +81,9 @@ export async function createPlayerAuto(req: Request, res: Response, next: NextFu
     await rankService.createRanksEvery();
     res.status(200).send("done");
   } catch (e) {
-    console.log(e);
+    if (e instanceof Error) {
+      await sendErrorAtGmail("데이터 축척하던중 에러 발생했습니다.", e.message);
+    }
     res.status(404).send(e);
   }
 }

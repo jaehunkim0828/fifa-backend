@@ -222,7 +222,9 @@ export async function getPlayerPrice(page: Page, name: string, seasonId: string,
     }),
     page.waitForNavigation(),
     page.waitForSelector(".span_bp1"),
-  ]);
+  ]).catch((e: Error) => {
+    throw new Error(e.message);
+  });
 
   const content = await page.content();
 

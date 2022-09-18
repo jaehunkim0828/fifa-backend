@@ -23,4 +23,8 @@ export const config = {
     port: required("PORT"),
     front: required("FRONT_URL"),
   },
+  email: {
+    user: required("EMAIL_USER"),
+    password: required("EMAIL_PASSWORD"),
+  },
 };

@@ -1,5 +1,7 @@
 import { AxiosResponse } from "axios";
 import express, { Request, Response, NextFunction } from "express";
+import { config } from "../config/config";
+import { sendInfoAtGmail } from "../external/mail";
 import { position } from "../InsertData";
 import { getFifaApi } from "../method";
 import { Player, Position, Season } from "../mysql/schema";
@@ -78,8 +80,12 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
         });
       }
     });
+
+    await sendInfoAtGmail("선수 업데이트", "새로운 시즌 선수들 업데이트 성공했습니다.");
+
     res.status(201).send("done");
   } catch (err) {
+    console.log(err);
     res.status(404).send(err);
   }
 });
