@@ -13,14 +13,16 @@ export async function findPrice(spid: string, rating: number) {
 }
 
 async function getPriceUsingCrawling(spid: string, rating: number) {
-  const brower = await puppeteer.launch({ headless: true });
+  const brower = await puppeteer.launch({ headless: true, defaultViewport: null });
   const page = await brower.newPage();
 
   const player = await playerRepository.getPlayerInfo(spid);
 
   await Promise.all([
+    page.waitForNavigation(),
     page.goto(`https://fifaonline4.nexon.com/DataCenter/index?strSeason=%2C${spid.substring(0, 3)}%2C&strPlayerName=${player?.name}`, {
       waitUntil: "networkidle2",
+      timeout: 0,
     }),
     page.waitForNavigation(),
     page.waitForSelector(".span_bp1"),
