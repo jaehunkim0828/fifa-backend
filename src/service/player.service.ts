@@ -57,7 +57,7 @@ export async function updatePosition(spid: string) {
 
   if (!player) throw new Error("없는 선수입니다.");
   const rawPlayer = player.getDataValue("ranks");
-  if (!rawPlayer.length) throw new Error("선수 데이터가 존재하지 않습니다.");
+  if (!rawPlayer?.length) throw new Error("선수 데이터가 존재하지 않습니다.");
 
   return await playerRepository.updatePosition(rawPlayer[0].position, player.get().id);
 }

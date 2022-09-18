@@ -8,9 +8,9 @@ import valueRouter from "./value";
 
 const rootRouter = express.Router();
 
+rootRouter.use("/add", dataRouter);
 rootRouter.use("/player", playerRouter);
 rootRouter.use("/rank", rankRouter);
-rootRouter.use("/data", dataRouter);
 rootRouter.use("/position", positionRouter);
 rootRouter.use("/value", valueRouter);
 

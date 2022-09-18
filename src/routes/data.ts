@@ -1,5 +1,6 @@
+import { AxiosResponse } from "axios";
 import express, { Request, Response, NextFunction } from "express";
-import { position, season } from "../InsertData";
+import { position } from "../InsertData";
 import { getFifaApi } from "../method";
 import { Player, Position, Season } from "../mysql/schema";
 
@@ -12,10 +13,27 @@ dataRouter.route("/position").get((req: Request, res: Response, next: NextFuncti
     await Position.create({ spposition: +po.position, desc: po.name });
   });
 });
-dataRouter.route("/season").get((req: Request, res: Response, next: NextFunction) => {
-  season.forEach(async (sea) => {
-    await Season.create({ seasonId: +sea.id, className: sea.name, seasonImg: sea.seasonId });
-  });
+dataRouter.route("/season").get(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const season = await getFifaApi("https://static.api.nexon.co.kr/fifaonline4/latest/seasonid.json");
+
+    season.data.forEach(async (s: { seasonId: number; className: string; seasonImg: string }, i: number) => {
+      const isSeason = await Season.findOne({
+        where: {
+          seasonId: s.seasonId,
+        },
+      });
+
+      if (s.seasonId && !isSeason) {
+        console.log(`${s.className} 생성`);
+        await Season.create({ seasonId: +s.seasonId, className: s.className, seasonImg: s.seasonImg });
+      }
+    });
+
+    res.status(201).send("season done");
+  } catch (err) {
+    res.status(404).send(err);
+  }
 });
 
 dataRouter.route("/player1").get(async (req: Request, res: Response, next: NextFunction) => {
@@ -38,6 +56,32 @@ dataRouter.route("/player3").get(async (req: Request, res: Response, next: NextF
     await Player.create(result[i]);
   }
   res.send("done");
+});
+
+dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const player: any = await getFifaApi("https://static.api.nexon.co.kr/fifaonline4/latest/spid.json");
+
+    player.data.forEach(async (p: { id: number; name: string }, i: number) => {
+      const isPlayer = await Player.findOne({
+        where: {
+          id: p.id,
+        },
+      });
+      if (p.id && !isPlayer) {
+        console.log(`${p.name}(${p.id})플레이어 생성`);
+        return await Player.create({
+          id: p.id,
+          name: p.name,
+          seasonSeasonId: p.id.toString().slice(0, 3),
+          positionId: null,
+        });
+      }
+    });
+    res.status(201).send("done");
+  } catch (err) {
+    res.status(404).send(err);
+  }
 });
 
 export default dataRouter;

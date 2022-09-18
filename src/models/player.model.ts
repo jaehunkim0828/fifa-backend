@@ -9,8 +9,9 @@ import { SeasonAttributes } from "./season.model";
 export interface PlayerAttributes {
   id: number;
   name: string;
-  positionId: string;
-  ranks: Ranks[] | [];
+  seasonSeasonId: string;
+  positionId: string | null;
+  ranks?: Ranks[] | [];
   season?: SeasonAttributes;
   position?: PositionAttributes;
 }
