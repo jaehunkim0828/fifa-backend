@@ -1,5 +1,5 @@
-import puppeteer from "puppeteer";
-import { load } from "cheerio";
+import puppeteer, { Page } from "puppeteer";
+import { CheerioAPI, load } from "cheerio";
 
 import * as valueRepository from "../repository/value";
 import * as playerRepository from "../repository/player";
@@ -33,20 +33,25 @@ async function getPriceUsingCrawling(spid: string, rating: number) {
 
   let playerPrice = $(content).find(`.span_bp${rating}`).text();
 
+  if (player) await updateValue($, content, player.name, spid);
+  else throw new Error("선수가 존재하지않습니다.");
+
+  await brower.close();
+
+  return playerPrice;
+}
+
+export async function updateValue($: CheerioAPI, content: string, name: string, spid: string) {
   for (let rating = 1; rating <= 10; rating += 1) {
     let bp = $(content).find(`.span_bp${rating}`).text();
     // price
     const isValue = await valueRepository.findValueByRatingAndSpid(spid, rating);
     if (isValue) {
-      await valueRepository.updateValue(bp, spid);
-      console.log(`${player?.name} (${rating}+): ${bp} 업데이트 완료`);
+      await valueRepository.updateValue(bp, spid, rating);
+      console.log(`${name} (${rating}+): ${bp} 업데이트 완료`);
     } else {
       await valueRepository.createValue(rating, bp, spid);
-      console.log(`${player?.name} (${rating}+): ${bp} 생성 완료`);
+      console.log(`${name} (${rating}+): ${bp} 생성 완료`);
     }
   }
-
-  await brower.close();
-
-  return playerPrice;
 }

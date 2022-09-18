@@ -18,7 +18,7 @@ export async function findValueByRatingAndSpid(spid: string, rating: number) {
   });
 }
 
-export async function updateValue(bp: string, spid: string) {
+export async function updateValue(bp: string, spid: string, rating: number) {
   return await Value.update(
     {
       price: bp,
@@ -26,6 +26,7 @@ export async function updateValue(bp: string, spid: string) {
     {
       where: {
         spidId: spid,
+        rating,
       },
     }
   );

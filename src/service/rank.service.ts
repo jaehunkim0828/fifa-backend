@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import { load } from "cheerio";
 
 import * as rankRepository from "../repository/rank";
-import * as valueRepository from "../repository/value";
+import * as valueService from "../service/value.srvice";
 import { RankInput } from "../types/rank/rank.crud";
 import players from "../players.json";
 import { Rank, Value } from "../mysql/schema";
@@ -168,7 +168,7 @@ export async function createRanksEvery() {
       if (now === "00:00") return true;
       return false;
     };
-    if (isToTime(new Date())) {
+    if (true) {
       /* 해주는 일
         1. Rank 데이터 추가해주기 
         2. 선수 가격 추가해주기
@@ -228,17 +228,7 @@ export async function getPlayerPrice(page: Page, name: string, seasonId: string,
 
   const $ = load(content);
 
-  for (let rating = 1; rating <= 10; rating += 1) {
-    let bp = $(content).find(`.span_bp${rating}`).text();
-    // price
-    const isValue = await valueRepository.findValueByRatingAndSpid(spid, rating);
-    if (isValue) {
-      await valueRepository.updateValue(bp, spid);
-      console.log(`${name}(${rating}+): ${bp} 업데이트 완료`);
-    } else {
-      await valueRepository.createValue(rating, bp, spid);
-      console.log(`${name}(${rating}+): ${bp} 생성 완료`);
-    }
-  }
+  valueService.updateValue($, content, name, spid);
+
   await wait(5000);
 }
