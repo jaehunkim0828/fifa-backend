@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import express, { Request, Response, NextFunction } from "express";
 import { config } from "../config/config";
 import { sendInfoAtGmail } from "../external/mail";
@@ -84,6 +83,17 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
     await sendInfoAtGmail("선수 업데이트", "새로운 시즌 선수들 업데이트 성공했습니다.");
 
     res.status(201).send("done");
+  } catch (err) {
+    console.log(err);
+    res.status(404).send(err);
+  }
+});
+
+dataRouter.route("/welcome").get(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    await sendInfoAtGmail("새로운 유저가 입장했습니다.", `${ip} 아이피에서 접속했습니다.`);
+    res.status(200).send("welcome!!");
   } catch (err) {
     console.log(err);
     res.status(404).send(err);
