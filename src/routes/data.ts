@@ -90,9 +90,9 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
   }
 });
 
-dataRouter.route("/welcome").get(async (req: Request, res: Response, next: NextFunction) => {
+dataRouter.route("/ip/:ip").get(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    var ip = req.ip;
+    const { ip } = req.params;
     await sendInfoAtGmail("새로운 유저가 입장했습니다.", `${ip} 아이피에서 접속했습니다.`);
     res.status(200).send("welcome!!");
   } catch (err) {
