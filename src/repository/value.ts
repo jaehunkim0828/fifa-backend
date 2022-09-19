@@ -5,6 +5,7 @@ export async function createValue(rating: number, bp: string, spid: string) {
     rating,
     price: bp,
     spidId: spid,
+    createdAt: new Date(),
   });
 }
 
@@ -14,7 +15,7 @@ export async function findValueByRatingAndSpid(spid: string, rating: number) {
       spidId: spid,
       rating,
     },
-    attributes: ["id", "price"],
+    attributes: ["id", "price", "createdAt"],
   });
 }
 

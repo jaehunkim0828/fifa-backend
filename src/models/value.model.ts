@@ -7,6 +7,7 @@ export interface ValueAttributes {
   rating: number;
   price: string;
   spidId: string;
+  createdAt: Date;
   player?: PlayerAttributes;
 }
 export interface ValueInstance extends Model<ValueAttributes>, ValueAttributes {}
@@ -30,6 +31,10 @@ const Value = sequelize.define(
     },
     price: {
       type: DataTypes.STRING(64),
+      allowNull: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
   },

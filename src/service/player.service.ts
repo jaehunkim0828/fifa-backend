@@ -1,8 +1,11 @@
-import * as playerRepository from "../repository/player";
-import players from "../players.json";
-import sanitizeHtml from "sanitize-html";
-import { load } from "cheerio";
 import puppeteer from "puppeteer";
+import axios from "axios";
+import iconv from "iconv-lite";
+import { load } from "cheerio";
+
+import * as playerRepository from "../repository/player";
+import * as positionService from "../service/position.service";
+import players from "../players.json";
 
 // export async function updateSeason() {
 //   const season = {};
@@ -46,20 +49,24 @@ export async function findPlayerPrice(spid: string, grade: number) {
   return playerPrice;
 }
 
+export async function getPlayerImage(spid: string) {
+  const image = await axios({
+    url: `https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1Strong=1`,
+    method: "GET",
+    responseType: "arraybuffer",
+  }).then(async (html) => {
+    const content = iconv.decode(html.data, "UTF-8");
+    const $ = load(content);
+
+    return $(".img > img").attr("src");
+  });
+
+  return image;
+}
+
 export async function totalPlayerCount(name: string) {
   const names = name.split(",").map((p) => p.trim());
   return playerRepository.totalPlayerCount(names);
-}
-
-export async function updatePosition(spid: string) {
-  //가장 많은 플레이수와 패스시도가 많은 포지션의 선수 데이터 가져오기
-  const player = await playerRepository.findPostionByMc(spid);
-
-  if (!player) throw new Error("없는 선수입니다.");
-  const rawPlayer = player.getDataValue("ranks");
-  if (!rawPlayer?.length) throw new Error("선수 데이터가 존재하지 않습니다.");
-
-  return await playerRepository.updatePosition(rawPlayer[0].position, player.get().id);
 }
 
 export async function createMainPositionEvery() {
@@ -75,7 +82,7 @@ export async function createMainPositionEvery() {
     if (isToTime(new Date())) {
       for (let i = 0; i < players.selectedPlayer.length; i += 1) {
         const player = players.selectedPlayer[i];
-        const result = await updatePosition(player.spid + "");
+        const result = await positionService.updatePosition(player.spid + "");
         console.log(`${player.name}의 선수 포지션이 ${!!result[0] ? "변경되었습니다" : "변경되지 않았습니다."}`);
       }
     }

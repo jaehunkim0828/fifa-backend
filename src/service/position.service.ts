@@ -1,4 +1,10 @@
+import axios from "axios";
+import iconv from "iconv-lite";
+import { load } from "cheerio";
+
 import * as playerRepository from "../repository/position";
+import * as positionRepository from "../repository/position";
+import { Position } from "../mysql/schema";
 
 export async function findPositionAvg(part: string) {
   const partOfRank = await playerRepository.findPositionAvg(part);
@@ -51,4 +57,27 @@ export async function findPartByPlayer(spid: string) {
   const player = await playerRepository.findPartByPlayer(spid);
   if (!player?.position) return "미정";
   return { part: player?.position.part, desc: player?.position.desc };
+}
+
+export async function updatePosition(spid: string) {
+  //가장 많은 플레이수와 패스시도가 많은 포지션의 선수 데이터 가져오기
+  const position = await axios({
+    url: `https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1Strong=1`,
+    method: "GET",
+    responseType: "arraybuffer",
+  }).then(async (html) => {
+    const content = iconv.decode(html.data, "UTF-8");
+    const $ = load(content);
+
+    return $(".info_ab > .position:first-child > .txt").text();
+  });
+
+  const positionId = await Position.findOne({
+    where: {
+      desc: position,
+    },
+    attributes: ["spposition"],
+  });
+
+  return await positionRepository.updatePosition(positionId?.getDataValue("spposition")?.toString() ?? "28", +spid);
 }

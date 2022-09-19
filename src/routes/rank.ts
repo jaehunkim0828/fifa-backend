@@ -7,7 +7,7 @@ const rankRouter = express.Router();
 rankRouter.route("/").post(rankController.PlayerAbility).get(rankController.createPlayerAuto);
 rankRouter.route("/all").get(rankController.getAllRank);
 rankRouter.route("/player/count").get(rankController.countAllRank);
-rankRouter.route("/po").get(rankController.getPosition);
+// rankRouter.route("/po").get(rankController.getPosition);
 rankRouter.route("/potential").post(rankController.createPlayerRank).get(rankController.getPlayerTotalScorecard);
 
 export default rankRouter;

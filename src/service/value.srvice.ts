@@ -7,7 +7,11 @@ import * as playerRepository from "../repository/player";
 export async function findPrice(spid: string, rating: number) {
   const value = await valueRepository.findValueByRatingAndSpid(spid, rating);
 
-  if (value) return value.price;
+  // 가격을 생성한지 2일이 지나지 않으면 기존 가격 보여주기.
+  if (value) {
+    const a = value.getDataValue("createdAt");
+    if (Math.floor((Date.now() - Date.parse(a.toString())) / 1000) <= 259200) return value.price;
+  }
 
   return await getPriceUsingCrawling(spid, rating);
 }
