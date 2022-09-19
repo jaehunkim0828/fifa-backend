@@ -16,6 +16,8 @@ app.use(
     origin: [config.http.front],
   })
 );
+app.set("trust proxy", true);
+
 app.use(express.static(path.join(path.resolve(), "./src/public")));
 
 app.use("/", rootRouter);
