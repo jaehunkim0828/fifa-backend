@@ -1,5 +1,6 @@
 import express from "express";
 import dataRouter from "./data";
+import mailRouter from "./mail";
 
 import playerRouter from "./player";
 import positionRouter from "./position";
@@ -13,5 +14,6 @@ rootRouter.use("/player", playerRouter);
 rootRouter.use("/rank", rankRouter);
 rootRouter.use("/position", positionRouter);
 rootRouter.use("/value", valueRouter);
+rootRouter.use("/mail", mailRouter);
 
 export default rootRouter;
