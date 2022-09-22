@@ -23,6 +23,7 @@ export async function updateValue(bp: string, spid: string, rating: number) {
   return await Value.update(
     {
       price: bp,
+      createdAt: new Date(),
     },
     {
       where: {
