@@ -10,3 +10,14 @@ export async function sendQuestion(req: Request, res: Response, next: NextFuncti
     res.status(404).send(err);
   }
 }
+
+export async function sendUserIp(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { ip } = req.body;
+    await sendInfoAtGmail("새로운 유저가 입장했습니다.", `${ip} 아이피에서 접속했습니다.`);
+    res.status(200).send("welcome!!");
+  } catch (err) {
+    console.log(err);
+    res.status(404).send(err);
+  }
+}
