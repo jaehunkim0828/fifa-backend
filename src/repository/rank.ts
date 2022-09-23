@@ -11,6 +11,19 @@ export async function findAllPo() {
   return await Position.findAll();
 }
 
+export async function checkRank(createDate: string, spId: number, spPosition: string) {
+  return Rank.findAll({
+    where: {
+      createDate: {
+        [Op.lte]: createDate,
+      },
+      spidId: spId,
+      position: spPosition,
+    },
+    order: [["createDate", "DESC"]],
+  });
+}
+
 export async function findRankByIdAndPostion(spid: string, po: string) {
   const position = po === "50" ? { [Op.ne]: "50" } : po;
 

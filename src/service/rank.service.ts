@@ -8,6 +8,38 @@ import players from "../players.json";
 import { Rank, Value } from "../mysql/schema";
 import puppeteer, { Page } from "puppeteer";
 
+export async function create(player: RankInput[], name: string) {
+  player.forEach(
+    async ({
+      spId,
+      spPosition,
+      createDate,
+      status: { assist, block, dribble, dribbleSuccess, dribbleTry, effectiveShoot, goal, matchCount, passSuccess, passTry, shoot, tackle },
+    }: RankInput) => {
+      await createRank({
+        spId: +spId,
+        spPosition,
+        name,
+        status: {
+          assist,
+          block,
+          dribble,
+          dribbleSuccess,
+          dribbleTry,
+          effectiveShoot,
+          goal,
+          matchCount,
+          passSuccess,
+          passTry,
+          shoot,
+          tackle,
+        },
+        createDate,
+      });
+    }
+  );
+}
+
 export async function getRankById(spid: string, po: string) {
   const partOfRank = await rankRepository.findRankByIdAndPostion(spid, po);
   let assist: number = 0;
@@ -87,16 +119,7 @@ export async function createRank(rankInput: RankInput): Promise<void> {
     createDate,
   } = rankInput;
 
-  const existedRank = await Rank.findAll({
-    where: {
-      createDate: {
-        [Op.lte]: createDate,
-      },
-      spidId: spId,
-      position: spPosition,
-    },
-    order: [["createDate", "DESC"]],
-  });
+  const existedRank = await rankRepository.checkRank(createDate, spId, spPosition);
 
   const prev = existedRank[0]?.get();
 
@@ -170,12 +193,8 @@ export async function createRanksEvery() {
     };
     if (isToTime(new Date())) {
       /* 해주는 일
-        1. Rank 데이터 추가해주기 
-        2. 선수 가격 추가해주기
+        Rank 데이터 추가해주기 
       */
-      const brower = await puppeteer.launch({ headless: true });
-      const page = await brower.newPage();
-
       for (let i = 0; i < players.selectedPlayer.length; i += 1) {
         const { spid, name } = players.selectedPlayer[i];
         const playerArr: string[] = [];
@@ -195,10 +214,7 @@ export async function createRanksEvery() {
 
           await createRank(ability.data[i]);
         }
-        // 가격 추가해주기
-        await getPlayerPrice(page, name, spid.toString().substring(0, 3), spid.toString());
       }
-      await brower.close();
     }
 
     await wait(10000);
@@ -210,27 +226,4 @@ export async function createRanksEvery() {
 
 export async function totalRankCount() {
   return rankRepository.totalRankCount();
-}
-
-export async function getPlayerPrice(page: Page, name: string, seasonId: string, spid: string) {
-  const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
-  await Promise.all([
-    page.waitForNavigation(),
-    page.goto(`https://fifaonline4.nexon.com/DataCenter/index?strSeason=%2C${seasonId}%2C&strPlayerName=${name}`, {
-      waitUntil: "networkidle2",
-      timeout: 0,
-    }),
-    page.waitForNavigation(),
-    page.waitForSelector(".span_bp1"),
-  ]).catch((e: Error) => {
-    throw new Error(e.message);
-  });
-
-  const content = await page.content();
-
-  const $ = load(content);
-
-  valueService.updateValue($, content, name, spid);
-
-  await wait(5000);
 }

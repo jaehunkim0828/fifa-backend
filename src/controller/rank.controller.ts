@@ -5,6 +5,21 @@ import { sendErrorAtGmail } from "../external/mail";
 
 import * as rankService from "../service/rank.service";
 import { RankType } from "../types/rank/rank";
+import { RankInput } from "../types/rank/rank.crud";
+
+export async function createPlayerRank(req: Request, res: Response, next: NextFunction) {
+  const { player, name } = req.body;
+
+  // 날짜 spid겹치는거 있는지 확인
+  try {
+    const playerName = await rankService.create(player, name);
+    res.status(201).send(`${playerName}선수의 데이터가 생성되었습니다.`);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(404).send(err.message);
+    }
+  }
+}
 
 export async function PlayerAbility(req: Request<"", "", RankType>, res: Response, next: NextFunction) {
   try {
@@ -23,56 +38,6 @@ export async function getPosition(req: Request, res: Response, next: NextFunctio
     res.status(200).send(po);
   } catch {
     res.status(404).send("I can`t find postion table.");
-  }
-}
-
-export async function createPlayerRank(req: Request, res: Response, next: NextFunction) {
-  const {
-    spid,
-    position,
-    name,
-    assist,
-    block,
-    dribble,
-    dribbleSuccess,
-    dribbleTry,
-    effectiveShoot,
-    goal,
-    matchCount,
-    passSuccess,
-    passTry,
-    shoot,
-    tackle,
-    createDate,
-  } = req.body;
-
-  // 날짜 spid겹치는거 있는지 확인
-  try {
-    await rankService.createRank({
-      spId: +spid,
-      spPosition: position,
-      name,
-      status: {
-        assist,
-        block,
-        dribble,
-        dribbleSuccess,
-        dribbleTry,
-        effectiveShoot,
-        goal,
-        matchCount,
-        passSuccess,
-        passTry,
-        shoot,
-        tackle,
-      },
-      createDate,
-    });
-    res.status(201).send(`${name}선수의 데이터가 생성되었습니다.`);
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(404).send(err.message);
-    }
   }
 }
 
