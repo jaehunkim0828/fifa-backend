@@ -9,7 +9,6 @@ import { RankInput } from "../types/rank/rank.crud";
 
 export async function createPlayerRank(req: Request, res: Response, next: NextFunction) {
   const { player, name } = req.body;
-  ("");
   // 날짜 spid겹치는거 있는지 확인
   try {
     const playerName = await rankService.create(player, name);
