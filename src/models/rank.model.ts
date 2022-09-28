@@ -15,7 +15,7 @@ export type RankModel = typeof Model & {
 };
 
 const Rank = sequelize.define(
-  "rank",
+  "ranks",
   {
     id: {
       primaryKey: true,

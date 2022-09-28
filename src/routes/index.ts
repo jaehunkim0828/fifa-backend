@@ -6,6 +6,7 @@ import playerRouter from "./player";
 import positionRouter from "./position";
 import rankRouter from "./rank";
 import valueRouter from "./value";
+import commentRouter from "./comment";
 
 const rootRouter = express.Router();
 
@@ -15,5 +16,6 @@ rootRouter.use("/rank", rankRouter);
 rootRouter.use("/position", positionRouter);
 rootRouter.use("/value", valueRouter);
 rootRouter.use("/mail", mailRouter);
+rootRouter.use("/comment", commentRouter);
 
 export default rootRouter;

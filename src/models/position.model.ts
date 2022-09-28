@@ -12,7 +12,7 @@ export type PositionModel = typeof Model & {
 };
 
 const Position = sequelize.define(
-  "position",
+  "positions",
   {
     spposition: {
       type: DataTypes.INTEGER,
