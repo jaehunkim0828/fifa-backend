@@ -24,10 +24,12 @@ export async function PlayerAbility(req: Request<"", "", RankType>, res: Respons
   try {
     const { matchtype, spid } = req.body;
     const ability = await rankService.findNewRank(spid, matchtype);
-    res.status(200).send(ability.data);
+    if (ability) res.status(200).send(ability.data);
+    else {
+      throw new Error("선수 데이터가 없습니다.");
+    }
   } catch (e) {
-    console.log(e);
-    res.status(404).send("An unexpected error occurred");
+    if (e instanceof Error) res.status(404).send(e.message);
   }
 }
 

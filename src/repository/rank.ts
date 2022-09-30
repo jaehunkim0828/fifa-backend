@@ -4,7 +4,9 @@ import { getFifaApi } from "../method";
 import { Player, Position, Rank, Season } from "../mysql/schema";
 
 export async function getrankerInfo(matchtype: number, stringify: string) {
-  return getFifaApi(`https://api.nexon.co.kr/fifaonline4/v1.0/rankers/status?matchtype=${matchtype}&players=${encodeURI(stringify)}`);
+  return getFifaApi(`https://api.nexon.co.kr/fifaonline4/v1.0/rankers/status?matchtype=${matchtype}&players=${encodeURI(stringify)}`).catch(
+    () => console.log("선수 데이터 없음")
+  );
 }
 
 export async function findAllPo() {

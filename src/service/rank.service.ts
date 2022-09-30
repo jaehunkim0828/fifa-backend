@@ -1,12 +1,8 @@
-import { Op } from "sequelize";
-import { load } from "cheerio";
-
 import * as rankRepository from "../repository/rank";
-import * as valueService from "../service/value.srvice";
 import { RankInput } from "../types/rank/rank.crud";
-import players from "../players.json";
-import { Rank, Value } from "../mysql/schema";
-import puppeteer, { Page } from "puppeteer";
+import { Rank } from "../mysql/schema";
+import { getFifaApi } from "../method";
+import { AxiosResponse } from "axios";
 
 export async function create(player: RankInput[], name: string) {
   player.forEach(
@@ -96,9 +92,11 @@ export async function findNewRank(spid: string, matchtype: string) {
 
   let stringify = `[${playerArr}]`;
   const ability = await rankRepository.getrankerInfo(+matchtype, stringify);
-  ability.data.sort(
-    (a: { status: { matchCount: number } }, b: { status: { matchCount: number } }) => b.status.matchCount - a.status.matchCount
-  );
+  if (ability) {
+    ability.data.sort(
+      (a: { status: { matchCount: number } }, b: { status: { matchCount: number } }) => b.status.matchCount - a.status.matchCount
+    );
+  }
   return ability;
 }
 
@@ -155,6 +153,8 @@ export async function createRank(rankInput: RankInput): Promise<void> {
       tackle,
       createDate,
     });
+
+    console.log(`${name}(${spId}) 선수 생성 완료.`);
   } else if (prev.createDate < createDate) {
     await Rank.update(
       {
@@ -178,11 +178,17 @@ export async function createRank(rankInput: RankInput): Promise<void> {
         },
       }
     );
+    console.log(`${name}(${spId}) 선수 업데이트 완료.`);
   } else console.log(`${name} 선수의 데이터가 이미 존재합니다.`);
 }
 
 export async function createRanksEvery() {
   const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
+
+  const players2: AxiosResponse<{ id: number; name: string }[]> = await getFifaApi(
+    "https://static.api.nexon.co.kr/fifaonline4/latest/spid.json"
+  );
+
   while (true) {
     console.log(new Date().toLocaleString());
 
@@ -191,28 +197,30 @@ export async function createRanksEvery() {
       if (now === "00:00") return true;
       return false;
     };
-    if (isToTime(new Date())) {
+    if (true) {
       /* 해주는 일
         Rank 데이터 추가해주기 
       */
-      for (let i = 0; i < players.selectedPlayer.length; i += 1) {
-        const { spid, name } = players.selectedPlayer[i];
+      for (let i = 0; i < players2.data.length; i += 1) {
+        const { id, name } = players2.data[i];
         const playerArr: string[] = [];
 
         for (let j = 0; j < 26; j += 1) {
-          playerArr.push(`{"id":${spid},"po":${j}}`);
+          playerArr.push(`{"id":${id},"po":${j}}`);
         }
 
         let stringify = `[${playerArr}]`;
 
         const ability = await rankRepository.getrankerInfo(50, stringify);
-        ability.data.sort(
-          (a: { status: { matchCount: number } }, b: { status: { matchCount: number } }) => b.status.matchCount - a.status.matchCount
-        );
-        for (let i = 0; i < ability.data.length; i += 1) {
-          ability.data[i].name = name;
+        if (ability) {
+          ability.data.sort(
+            (a: { status: { matchCount: number } }, b: { status: { matchCount: number } }) => b.status.matchCount - a.status.matchCount
+          );
+          for (let i = 0; i < ability.data.length; i += 1) {
+            ability.data[i].name = name;
 
-          await createRank(ability.data[i]);
+            await createRank(ability.data[i]);
+          }
         }
       }
     }
