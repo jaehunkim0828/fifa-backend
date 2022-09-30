@@ -185,10 +185,9 @@ export async function createRank(rankInput: RankInput): Promise<void> {
 export async function createRanksEvery() {
   const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
 
-  const players2: AxiosResponse<{ id: number; name: string }[]> = await getFifaApi(
+  const players: AxiosResponse<{ id: number; name: string }[]> = await getFifaApi(
     "https://static.api.nexon.co.kr/fifaonline4/latest/spid.json"
   );
-
   while (true) {
     console.log(new Date().toLocaleString());
 
@@ -201,9 +200,23 @@ export async function createRanksEvery() {
       /* 해주는 일
         Rank 데이터 추가해주기 
       */
-      for (let i = 0; i < players2.data.length; i += 1) {
-        const { id, name } = players2.data[i];
+      for (let i = 0; i < players.data.length; i += 1) {
+        const { id, name } = players.data[i];
         const playerArr: string[] = [];
+
+        // 특정 시즌 지나치기
+        switch (id.toString().substring(0, 3)) {
+          case "300":
+          case "320":
+          case "319":
+          case "318":
+          case "317":
+            console.log("pass");
+            continue;
+
+          default:
+            break;
+        }
 
         for (let j = 0; j < 26; j += 1) {
           playerArr.push(`{"id":${id},"po":${j}}`);
