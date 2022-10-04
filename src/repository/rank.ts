@@ -61,6 +61,75 @@ export async function findRankByIdAndPostion(spid: string, po: string) {
   });
 }
 
+export async function findPositionAvg(part: string) {
+  return Rank.findAll({
+    attributes: [
+      "name",
+      "assist",
+      "block",
+      "dribble",
+      "dribbleSuccess",
+      "dribbleTry",
+      "effectiveShoot",
+      "goal",
+      "passSuccess",
+      "passTry",
+      "shoot",
+      "tackle",
+      "matchCount",
+    ],
+    include: [
+      {
+        model: Player,
+        attributes: [],
+        required: true,
+        include: [
+          {
+            model: Position,
+            attributes: [],
+            where: {
+              part,
+            },
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export async function findAvg() {
+  return Rank.findAll({
+    attributes: [
+      "name",
+      "assist",
+      "block",
+      "dribble",
+      "dribbleSuccess",
+      "dribbleTry",
+      "effectiveShoot",
+      "goal",
+      "passSuccess",
+      "passTry",
+      "shoot",
+      "tackle",
+      "matchCount",
+    ],
+    include: [
+      {
+        model: Player,
+        attributes: [],
+        required: true,
+        include: [
+          {
+            model: Position,
+            attributes: [],
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export async function findRankWithPlayer(current_page: number, count: number) {
   const limit = count;
   let offset = 0;

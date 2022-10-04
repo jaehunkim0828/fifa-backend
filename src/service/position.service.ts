@@ -2,12 +2,11 @@ import axios from "axios";
 import iconv from "iconv-lite";
 import { load } from "cheerio";
 
-import * as playerRepository from "../repository/position";
 import * as positionRepository from "../repository/position";
 import { Position } from "../mysql/schema";
 
 export async function findPositionAvg(part: string) {
-  const partOfRank = await playerRepository.findPositionAvg(part);
+  const partOfRank = await positionRepository.findPositionAvg(part);
 
   let assist: number = 0;
   let block: number = 0;
@@ -54,7 +53,7 @@ export async function findPositionAvg(part: string) {
 }
 
 export async function findPartByPlayer(spid: string) {
-  const player = await playerRepository.findPartByPlayer(spid);
+  const player = await positionRepository.findPartByPlayer(spid);
   if (!player?.position) return "미정";
   return { part: player?.position.part, desc: player?.position.desc };
 }

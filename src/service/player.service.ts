@@ -64,31 +64,38 @@ export async function getPlayerImage(spid: string) {
   return image;
 }
 
+export async function getPlayerByCr(spid: string) {
+  const html = await axios({
+    url: `https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${spid}&n1Strong=1`,
+    method: "GET",
+    responseType: "arraybuffer",
+  });
+
+  const content = iconv.decode(html.data, "UTF-8");
+  const $ = load(content);
+
+  const image = $(".img > img").attr("src");
+  const border = $(".card_back > img").attr("src");
+  let ovr = $(".info_ab > .position:first-child > .value").text();
+  const nation = $(".nation > img").attr("src");
+  const bigSeason = $(".card_back > .season > img").attr("src");
+  const position = $(".info_ab > .position:first-child > .txt").text();
+  const seasonImg = $(".name_wrap > .season > img").attr("src");
+  const pay = $(".side_utils > .pay_side ").text();
+
+  return {
+    image,
+    border,
+    ovr: +ovr + 3,
+    nation,
+    bigSeason,
+    position,
+    seasonImg,
+    pay,
+  };
+}
+
 export async function totalPlayerCount(name: string) {
   const names = name.split(",").map((p) => p.trim());
   return playerRepository.totalPlayerCount(names);
-}
-
-export async function createMainPositionEvery() {
-  const wait = (times: number) => new Promise((resolve) => setTimeout(resolve, times));
-  while (true) {
-    console.log(new Date().toLocaleString());
-
-    const isToTime = (date: Date) => {
-      const now = date.getHours();
-      if (now === 15) return true;
-      return false;
-    };
-    if (isToTime(new Date())) {
-      for (let i = 0; i < players.selectedPlayer.length; i += 1) {
-        const player = players.selectedPlayer[i];
-        const result = await positionService.updatePosition(player.spid + "");
-        console.log(`${player.name}의 선수 포지션이 ${!!result[0] ? "변경되었습니다" : "변경되지 않았습니다."}`);
-      }
-    }
-    await wait(600000);
-    if (new Date().getMonth() + 1 === 9) {
-      break;
-    }
-  }
 }

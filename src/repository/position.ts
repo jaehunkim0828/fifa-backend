@@ -38,6 +38,39 @@ export async function findPositionAvg(part: string) {
   });
 }
 
+export async function findAvg() {
+  return Rank.findAll({
+    attributes: [
+      "name",
+      "assist",
+      "block",
+      "dribble",
+      "dribbleSuccess",
+      "dribbleTry",
+      "effectiveShoot",
+      "goal",
+      "passSuccess",
+      "passTry",
+      "shoot",
+      "tackle",
+      "matchCount",
+    ],
+    include: [
+      {
+        model: Player,
+        attributes: [],
+        required: true,
+        include: [
+          {
+            model: Position,
+            attributes: [],
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export async function findPartByPlayer(spid: string) {
   return await Player.findOne({
     attributes: [],

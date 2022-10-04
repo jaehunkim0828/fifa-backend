@@ -2,16 +2,6 @@ import { Request, Response, NextFunction } from "express";
 
 import * as playerService from "../service/player.service";
 
-export async function createMainPositionEvery(req: Request, res: Response, next: NextFunction) {
-  try {
-    await playerService.createMainPositionEvery();
-    res.status(201).send("done");
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) res.status(404).send(err);
-  }
-}
-
 export async function getPlayerByName(req: Request, res: Response, next: NextFunction) {
   const { name } = req.params;
   const { current_page, count } = req.query;
@@ -45,18 +35,24 @@ export async function getPlayerById(req: Request, res: Response, next: NextFunct
   }
 }
 
-/** 고유번호에 맞는 선수 이미지 얻기
- * @return url;
- */
-export async function findImage(spid: string) {
-  return playerService.getPlayerImage(spid);
-}
-
 export async function findPlayerImage(req: Request, res: Response, next: NextFunction) {
   const { spid } = req.params;
   try {
-    const result = await findImage(spid);
+    /** 고유번호에 맞는 선수 이미지 얻기
+     * @return url;
+     */
+    const result = await playerService.getPlayerImage(spid);
     res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+}
+
+export async function getPlayerByCrawling(req: Request, res: Response, next: NextFunction) {
+  const { spid } = req.params;
+  try {
+    const player = await playerService.getPlayerByCr(spid);
+    res.status(200).send(player);
   } catch (err) {
     res.status(404).send(err);
   }

@@ -4,6 +4,15 @@ import { Rank } from "../mysql/schema";
 import { getFifaApi } from "../method";
 import { AxiosResponse } from "axios";
 
+enum PartStatus {
+  GK = "GK",
+  DF = "DF",
+  MF = "MF",
+  FW = "FW",
+  SUB = "SUB",
+  ALL = "ALL",
+}
+
 export async function create(player: RankInput[], name: string) {
   player.forEach(
     async ({
@@ -243,6 +252,55 @@ export async function createRanksEvery() {
       break;
     }
   }
+}
+
+export async function findAvgByPart(part: string) {
+  let partOfRank;
+  if (part !== PartStatus.ALL) partOfRank = await rankRepository.findPositionAvg(part);
+  else partOfRank = await rankRepository.findAvg();
+
+  let assist: number = 0;
+  let block: number = 0;
+  let dribble: number = 0;
+  let dribbleSuccess: number = 0;
+  let dribbleTry: number = 0;
+  let effectiveShoot: number = 0;
+  let goal: number = 0;
+  let passSuccess: number = 0;
+  let passTry: number = 0;
+  let shoot: number = 0;
+  let tackle: number = 0;
+  let matchCount: number = 0;
+
+  partOfRank.forEach((rank) => {
+    assist += +rank.assist * rank.matchCount;
+    block += +rank.block * rank.matchCount;
+    dribble += +rank.dribble * rank.matchCount;
+    dribbleSuccess += +rank.dribbleSuccess * rank.matchCount;
+    dribbleTry += +rank.dribbleTry * rank.matchCount;
+    effectiveShoot += +rank.effectiveShoot * rank.matchCount;
+    goal += +rank.goal * rank.matchCount;
+    passSuccess += +rank.passSuccess * rank.matchCount;
+    passTry += +rank.passTry * rank.matchCount;
+    shoot += +rank.shoot * rank.matchCount;
+    tackle += +rank.tackle * rank.matchCount;
+    matchCount += +rank.matchCount;
+  });
+
+  return {
+    assist: Math.round((assist / matchCount) * 10000) / 10000,
+    block: Math.round((block / matchCount) * 10000) / 10000,
+    dribble: Math.round((dribble / matchCount) * 10000) / 10000,
+    dribbleSuccess: Math.round((dribbleSuccess / matchCount) * 10000) / 10000,
+    dribbleTry: Math.round((dribbleTry / matchCount) * 10000) / 10000,
+    effectiveShoot: Math.round((effectiveShoot / matchCount) * 10000) / 10000,
+    goal: Math.round((goal / matchCount) * 10000) / 10000,
+    passSuccess: Math.round((passSuccess / matchCount) * 10000) / 10000,
+    passTry: Math.round((passTry / matchCount) * 10000) / 10000,
+    shoot: Math.round((shoot / matchCount) * 10000) / 10000,
+    tackle: Math.round((tackle / matchCount) * 10000) / 10000,
+    matchCount: matchCount,
+  };
 }
 
 export async function totalRankCount() {

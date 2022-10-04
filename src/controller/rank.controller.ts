@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import puppeteer, { Page } from "puppeteer";
-import { config } from "../config/config";
-import { sendErrorAtGmail } from "../external/mail";
 
+import { sendErrorAtGmail } from "../external/mail";
 import * as rankService from "../service/rank.service";
 import { RankType } from "../types/rank/rank";
-import { RankInput } from "../types/rank/rank.crud";
 
 export async function createPlayerRank(req: Request, res: Response, next: NextFunction) {
   const { player, name } = req.body;
@@ -17,6 +14,18 @@ export async function createPlayerRank(req: Request, res: Response, next: NextFu
     if (err instanceof Error) {
       res.status(404).send(err.message);
     }
+  }
+}
+
+export async function createPlayerAuto(req: Request, res: Response, next: NextFunction) {
+  try {
+    await rankService.createRanksEvery();
+    res.status(200).send("done");
+  } catch (e) {
+    if (e instanceof Error) {
+      await sendErrorAtGmail("데이터 축척하던중 에러 발생했습니다.", e.message);
+    }
+    res.status(404).send(e);
   }
 }
 
@@ -42,18 +51,6 @@ export async function getPosition(req: Request, res: Response, next: NextFunctio
   }
 }
 
-export async function createPlayerAuto(req: Request, res: Response, next: NextFunction) {
-  try {
-    await rankService.createRanksEvery();
-    res.status(200).send("done");
-  } catch (e) {
-    if (e instanceof Error) {
-      await sendErrorAtGmail("데이터 축척하던중 에러 발생했습니다.", e.message);
-    }
-    res.status(404).send(e);
-  }
-}
-
 export async function getPlayerTotalScorecard(req: Request, res: Response, next: NextFunction) {
   const { spid, po } = req.query;
   try {
@@ -64,6 +61,20 @@ export async function getPlayerTotalScorecard(req: Request, res: Response, next:
     throw new Error("unexpected error");
   } catch (err) {
     res.status(404).send("An unexpected error occured");
+  }
+}
+
+/** 포지션 or 전체 평균값 가져오기
+ * @params ['DF', 'MF', 'FW', 'GK', 'ALL']
+ */
+export async function findPositionAvg(req: Request, res: Response, next: NextFunction) {
+  const { part } = req.params;
+
+  try {
+    const average = await rankService.findAvgByPart(part);
+    res.status(200).send(average);
+  } catch (err) {
+    res.status(404).send(err);
   }
 }
 
