@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendInfoAtGmail(title: string, text: string) {
-  if (process.env.NODE_ENV !== "production")
+  if (process.env.NODE_ENV === "production")
     await transporter.sendMail({
       from: `PickFA <${config.email.user}>`,
       to: config.email.user,
