@@ -13,6 +13,7 @@ export async function getPriceBySpid(req: Request, res: Response, next: NextFunc
     }
     throw new Error("Unexpected error.");
   } catch (err) {
+    console.log(err);
     res.status(404).send(err);
   }
 }
