@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(morganMiddleware);
 app.use(
   cors({
-    origin: [config.http.front],
+    origin: "*",
   })
 );
 app.set("trust proxy", true);
