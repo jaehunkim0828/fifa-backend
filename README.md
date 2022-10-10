@@ -10,11 +10,16 @@ $ yarn start // production 환경
 ## env
 
 ```
-  FIFA_API_KEY // 피파온라인4 오픈 API
-  HOST //endpoint
-  USERNAME // username
-  PASSWORD // 비밀번호
-  DATABASE // 데이터베이스 
+  FIFA_API_KEY
+  HOST
+  USERNAME
+  PASSWORD
+  DATABASE
+  DOMAIN
+  PORT
+  FRONT_URL
+  EMAIL_USER
+  EMAIL_PASSWORD
 ```
 
 
