@@ -4,27 +4,28 @@ import iconv from "iconv-lite";
 import { load } from "cheerio";
 
 import * as playerRepository from "../repository/player";
-import * as positionService from "../service/position.service";
-import players from "../players.json";
-
-// export async function updateSeason() {
-//   const season = {};
-//   await Season.create(season);
-//   const data = await getFifaApi("https://static.api.nexon.co.kr/fifaonline4/latest/spid.json");
-
-//   const result = data.data
-//     .map((e: any) => {
-//       return e.id.toString().startsWith("new season id") ? { ...e, seasonSeasonId: "seasonid" } : false;
-//     })
-//     .filter((e: any) => e);
-
-//   result.forEach(async (data: any) => {
-//     await Player.create(data);
-//   });
-// }
 
 export async function findPlayers(name: string, current_page: string, count: string) {
-  return playerRepository.getplayerAllSeason(decodeURI(name), count, current_page);
+  return playerRepository.getplayerAllSeason(decodeURI(rename(name)), count, current_page);
+}
+
+function rename(name: string): string {
+  switch (name) {
+    case "날강두":
+      return "크리스티아누 호날두";
+    case "괴물 홀란":
+      return "엘링 홀란";
+    case "메갓":
+      return "리오넬 메시";
+    case "호돈":
+      return "호나우두";
+    case "소니":
+      return "손흥민";
+    case "쏘니":
+      return "손흥민";
+    default:
+      return name;
+  }
 }
 
 export async function findPlayerById(id: string) {
