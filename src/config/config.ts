@@ -25,6 +25,7 @@ export const config = {
   },
   email: {
     user: required("EMAIL_USER"),
+    user2: required("EMAIL_USER2"),
     password: required("EMAIL_PASSWORD"),
   },
 };

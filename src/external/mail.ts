@@ -15,7 +15,7 @@ export async function sendInfoAtGmail(title: string, text: string) {
   if (process.env.NODE_ENV === "production")
     await transporter.sendMail({
       from: `PickFA <${config.email.user}>`,
-      to: config.email.user,
+      to: config.email.user2,
       subject: title,
       text: text,
       html: `<b>${text}</b>`,
