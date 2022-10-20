@@ -14,6 +14,7 @@ export async function getplayerAllSeason(search: { name: string; season: string;
   const names = search.name.split(",").map((p) => p.trim());
   const season = search.season.split(",");
   const position = search.position.split(",");
+  console.log(hasValue(season, "seasonSeasonId"));
 
   if (!+count) {
     /** 선수 전체 다 보여주기 */
@@ -30,24 +31,8 @@ export async function getplayerAllSeason(search: { name: string; season: string;
               };
             }),
           },
-          {
-            [Op.or]: season.map((n) => {
-              return {
-                seasonSeasonId: {
-                  [Op.like]: `%${n}%`,
-                },
-              };
-            }),
-          },
-          {
-            [Op.or]: position.map((n) => {
-              return {
-                positionId: {
-                  [Op.like]: `%${n}%`,
-                },
-              };
-            }),
-          },
+          hasValue(season, "seasonSeasonId"),
+          hasValue(position, "positionId"),
         ],
       },
       include: [
@@ -84,24 +69,8 @@ export async function getplayerAllSeason(search: { name: string; season: string;
             };
           }),
         },
-        {
-          [Op.or]: season.map((n) => {
-            return {
-              seasonSeasonId: {
-                [Op.like]: `%${n}%`,
-              },
-            };
-          }),
-        },
-        {
-          [Op.or]: position.map((n) => {
-            return {
-              positionId: {
-                [Op.like]: `%${n}%`,
-              },
-            };
-          }),
-        },
+        hasValue(season, "seasonSeasonId"),
+        hasValue(position, "positionId"),
       ],
     },
     include: [
@@ -127,6 +96,19 @@ export async function getplayerAllSeason(search: { name: string; season: string;
   }).then((data) => data.slice(offset, offset + limit));
 }
 
+function hasValue(value: string[], type: string) {
+  if (value[0] === "") return {};
+  return {
+    [Op.or]: value.map((n) => {
+      return {
+        [type]: {
+          [Op.like]: n,
+        },
+      };
+    }),
+  };
+}
+
 export async function getPlayerInfo(id: string) {
   return Player.findOne({
     where: { id },
@@ -146,24 +128,8 @@ export async function totalPlayerCount(names: string[], season: string[], positi
             };
           }),
         },
-        {
-          [Op.or]: season.map((n) => {
-            return {
-              seasonSeasonId: {
-                [Op.like]: `%${n}%`,
-              },
-            };
-          }),
-        },
-        {
-          [Op.or]: position.map((n) => {
-            return {
-              positionId: {
-                [Op.like]: `%${n}%`,
-              },
-            };
-          }),
-        },
+        hasValue(season, "seasonSeasonId"),
+        hasValue(position, "positionId"),
       ],
     },
   });
