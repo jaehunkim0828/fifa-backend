@@ -4,9 +4,15 @@ import iconv from "iconv-lite";
 import { load } from "cheerio";
 
 import * as playerRepository from "../repository/player";
+import { position } from "../InsertData";
 
-export async function findPlayers(name: string, current_page: string, count: string) {
-  return playerRepository.getplayerAllSeason(decodeURI(rename(name)), count, current_page);
+export async function findPlayers(
+  search: { name: string; season: string; position: string },
+  current_page: string = "0",
+  count: string = "9"
+) {
+  const { name, season, position } = search;
+  return playerRepository.getplayerAllSeason({ name: decodeURI(rename(name)), season: season, position: position }, count, current_page);
 }
 
 function rename(name: string): string {
@@ -96,7 +102,13 @@ export async function getPlayerByCr(spid: string) {
   };
 }
 
-export async function totalPlayerCount(name: string) {
-  const names = name.split(",").map((p) => p.trim());
-  return playerRepository.totalPlayerCount(names);
+export async function totalPlayerCount({ name, season, position }: { name: string; season: string; position: string }) {
+  const names = name
+    ? rename(name)
+        .split(",")
+        .map((p) => p.trim())
+    : [""];
+  const seasons = season.split(",");
+  const positions = position.split(",");
+  return playerRepository.totalPlayerCount(names, seasons, positions);
 }

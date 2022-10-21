@@ -7,6 +7,7 @@ import positionRouter from "./position";
 import rankRouter from "./rank";
 import valueRouter from "./value";
 import commentRouter from "./comment";
+import seasonRouter from "./season";
 
 const rootRouter = express.Router();
 
@@ -17,5 +18,6 @@ rootRouter.use("/position", positionRouter);
 rootRouter.use("/value", valueRouter);
 rootRouter.use("/mail", mailRouter);
 rootRouter.use("/comment", commentRouter);
+rootRouter.use("/season", seasonRouter);
 
 export default rootRouter;

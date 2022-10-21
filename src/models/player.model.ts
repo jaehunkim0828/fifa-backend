@@ -10,6 +10,7 @@ export interface PlayerAttributes {
   id: number;
   name: string;
   seasonSeasonId: string;
+  ovr?: number;
   positionId: string | null;
   ranks?: Ranks[] | [];
   season?: SeasonAttributes;
@@ -32,6 +33,10 @@ const Player = sequelize.define(
     name: {
       type: DataTypes.STRING(128),
       allowNull: false,
+    },
+    ovr: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   { timestamps: false }

@@ -2,16 +2,17 @@ import { Request, Response, NextFunction } from "express";
 
 import * as playerService from "../service/player.service";
 
-export async function getPlayerByName(req: Request, res: Response, next: NextFunction) {
-  const { name } = req.params;
-  const { current_page, count } = req.query;
+class Query {
+  [x: string]: string;
+}
+
+export async function getPlayer(req: Request, res: Response, next: NextFunction) {
   try {
-    if (typeof current_page === "string" && typeof count === "string") {
-      const player = await playerService.findPlayers(name, current_page, count);
-      return res.status(200).send(player);
-    }
-    throw new Error("unexpected error");
+    const { current_page, count, name, season, position } = req.query as unknown as Query;
+    const player = await playerService.findPlayers({ name, season, position: position }, current_page, count);
+    return res.status(200).send(player);
   } catch (err) {
+    console.log(err);
     res.status(404).send(err);
   }
 }
@@ -60,9 +61,10 @@ export async function findPlayerPrice(req: Request, res: Response, next: NextFun
 }
 
 export async function countAllPlayer(req: Request, res: Response, next: NextFunction) {
-  const { name } = req.params;
   try {
-    const totalRankPlayer = await playerService.totalPlayerCount(name);
+    const { name, season, position } = req.query as unknown as Query;
+
+    const totalRankPlayer = await playerService.totalPlayerCount({ name, season: season, position });
 
     res.status(200).send(`${totalRankPlayer.rows.length}`);
   } catch (err) {
