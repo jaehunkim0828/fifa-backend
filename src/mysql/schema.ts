@@ -3,7 +3,7 @@ import PositionModel from "../models/position.model";
 import RankModel from "../models/rank.model";
 import SeasonModel from "../models/season.model";
 import ValueModel from "../models/value.model";
-import CommentModel from "../models/comment";
+import CommentModel from "../models/comment.model";
 import PostModel from "../models/post.model";
 
 export const Player = PlayerModel;
