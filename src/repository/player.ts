@@ -14,7 +14,6 @@ export async function getplayerAllSeason(search: { name: string; season: string;
   const names = search.name.split(",").map((p) => p.trim());
   const season = search.season.split(",");
   const position = search.position.split(",");
-  console.log(hasValue(season, "seasonSeasonId"));
 
   if (!+count) {
     /** 선수 전체 다 보여주기 */
