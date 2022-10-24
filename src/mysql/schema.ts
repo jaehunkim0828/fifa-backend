@@ -5,6 +5,7 @@ import SeasonModel from "../models/season.model";
 import ValueModel from "../models/value.model";
 import CommentModel from "../models/comment.model";
 import PostModel from "../models/post.model";
+import CardModel from "../models/card.model";
 
 export const Player = PlayerModel;
 export const Season = SeasonModel;
@@ -13,6 +14,7 @@ export const Rank = RankModel;
 export const Value = ValueModel;
 export const Comment = CommentModel;
 export const Post = PostModel;
+export const Card = CardModel;
 
 // spids
 Player.belongsTo(Season);
@@ -62,4 +64,9 @@ Post.hasMany(Player, {
 Comment.belongsTo(Post, {
   foreignKey: "postId",
   targetKey: "id",
+});
+
+// card
+Card.belongsTo(Player, {
+  foreignKey: "id",
 });

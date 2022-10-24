@@ -8,6 +8,7 @@ import rankRouter from "./rank";
 import valueRouter from "./value";
 import commentRouter from "./comment";
 import seasonRouter from "./season";
+import cardRouter from "./card";
 
 const rootRouter = express.Router();
 
@@ -19,5 +20,6 @@ rootRouter.use("/value", valueRouter);
 rootRouter.use("/mail", mailRouter);
 rootRouter.use("/comment", commentRouter);
 rootRouter.use("/season", seasonRouter);
+rootRouter.use("/card", cardRouter);
 
 export default rootRouter;
