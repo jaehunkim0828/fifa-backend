@@ -2,11 +2,14 @@ import { Request, Response, NextFunction } from "express";
 
 import * as cardService from "../service/card.service";
 
-export async function findCard(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { spid } = req.params;
+interface Cards {
+  spid: string;
+}
 
-    const card = await cardService.findCard(+spid);
+export async function findAllCard(req: Request<"", "", "", Cards>, res: Response, next: NextFunction) {
+  try {
+    const { spid } = req.query;
+    const card = await cardService.findCard(spid);
     res.status(201).send(card);
   } catch (err) {
     console.error(err);

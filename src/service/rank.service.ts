@@ -47,6 +47,9 @@ export async function create(player: RankInput[], name: string) {
 
 export async function getRankById(spid: string, po: string) {
   const partOfRank = await rankRepository.findRankByIdAndPostion(spid, po);
+  console.log(partOfRank.length);
+  if (!partOfRank.length) return;
+
   let assist: number = 0;
   let block: number = 0;
   let dribble: number = 0;

@@ -1,6 +1,7 @@
 import { DataTypes, Model, BuildOptions } from "sequelize";
 
 import { sequelize } from "../mysql/db";
+import { PlayerAttributes } from "./player.model";
 
 export interface CardAttributes {
   id?: number;
@@ -9,6 +10,7 @@ export interface CardAttributes {
   image: string;
   border: string;
   bigSeason: string;
+  spid?: PlayerAttributes;
 }
 
 interface CardInstance extends Model<CardAttributes>, CardAttributes {}

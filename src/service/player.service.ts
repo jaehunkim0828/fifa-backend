@@ -85,7 +85,7 @@ export async function getPlayerByCr(spid: string) {
   const border = $(".card_back > img").attr("src");
   let ovr = $(".info_ab > .position:first-child > .value").text();
   const nation = $(".nation > img").attr("src");
-  const bigSeason = $(".card_back > .season > img").attr("src");
+  const bigSeason = $(".season > img").attr("src");
   const position = $(".info_ab > .position:first-child > .txt").text();
   const seasonImg = $(".name_wrap > .season > img").attr("src");
   const pay = $(".side_utils > .pay_side ").text();

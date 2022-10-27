@@ -1,7 +1,7 @@
 import * as cardRepository from "../repository/card";
 
-export async function findCard(spid: number) {
-  const card = await cardRepository.findCardBySpid(spid);
-  if (!card) throw new Error("없는 spid");
-  return card;
+export async function findCard(spid: string) {
+  const cards = await cardRepository.findCardBySpid(spid);
+  if (!cards) throw new Error("선수가 없음");
+  return cards;
 }
