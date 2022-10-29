@@ -60,7 +60,7 @@ export async function getPlayerTotalScorecard(req: Request, res: Response, next:
     }
     throw new Error("unexpected error");
   } catch (err) {
-    res.status(404).send("An unexpected error occured");
+    res.status(404).send(err);
   }
 }
 

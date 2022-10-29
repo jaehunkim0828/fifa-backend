@@ -1,4 +1,4 @@
-import { CommentAttributes } from "../models/comment";
+import { CommentAttributes } from "../models/comment.model";
 import { Comment } from "../mysql/schema";
 
 export async function createComment({ username, content, role, createAt, groupNum, hierarchy, postId, password }: CommentAttributes) {

@@ -1,4 +1,4 @@
-import { InputComment, CommentAttributes } from "../models/comment";
+import { InputComment, CommentAttributes } from "../models/comment.model";
 import * as commentRepository from "../repository/comment";
 
 /**댓글 생성하기

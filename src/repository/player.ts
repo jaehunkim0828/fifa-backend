@@ -1,7 +1,7 @@
 import SQ from "sequelize";
 import { PlayerInstance } from "../models/player.model";
 import Position from "../models/position.model";
-import { Player, Rank, Season } from "../mysql/schema";
+import { Player, Rank, Season, Nation } from "../mysql/schema";
 
 const Op = SQ.Op;
 
@@ -10,7 +10,11 @@ const Op = SQ.Op;
  *  @argument count: 보여줄 선수 갯수
  *  @argument current_page: 현재 페이지
  */
-export async function getplayerAllSeason(search: { name: string; season: string; position: string }, count: string, current_page: string) {
+export async function getplayerAllSeason(
+  search: { name: string; season: string; position: string; nation: string },
+  count: string,
+  current_page: string
+) {
   const names = search.name.split(",").map((p) => p.trim());
   const season = search.season.split(",");
   const position = search.position.split(",");
@@ -89,6 +93,7 @@ export async function getplayerAllSeason(search: { name: string; season: string;
         model: Position,
         required: false,
       },
+      hasNation(search.nation),
     ],
     order: [[SQ.fn("Sum", SQ.col("ranks.matchCount")), "DESC"]],
     group: ["spids.id"],
@@ -114,7 +119,22 @@ export async function getPlayerInfo(id: string) {
   });
 }
 
-export async function totalPlayerCount(names: string[], season: string[], position: string[]) {
+function hasNation(value: string) {
+  if (value !== "")
+    return {
+      model: Nation,
+      where: {
+        name: {
+          [Op.like]: `%${value}%`,
+        },
+      },
+    };
+  return {
+    model: Nation,
+  };
+}
+
+export async function totalPlayerCount(names: string[], season: string[], position: string[], nation: string) {
   return Player.findAndCountAll({
     where: {
       [Op.and]: [
@@ -131,6 +151,7 @@ export async function totalPlayerCount(names: string[], season: string[], positi
         hasValue(position, "positionId"),
       ],
     },
+    include: [hasNation(nation)],
   });
 }
 

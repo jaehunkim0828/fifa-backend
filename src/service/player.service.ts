@@ -7,12 +7,16 @@ import * as playerRepository from "../repository/player";
 import { position } from "../InsertData";
 
 export async function findPlayers(
-  search: { name: string; season: string; position: string },
+  search: { name: string; season: string; position: string; nation: string },
   current_page: string = "0",
   count: string = "9"
 ) {
-  const { name, season, position } = search;
-  return playerRepository.getplayerAllSeason({ name: decodeURI(rename(name)), season: season, position: position }, count, current_page);
+  const { name, season, position, nation } = search;
+  return playerRepository.getplayerAllSeason(
+    { name: decodeURI(rename(name)), season: season, position: position, nation: decodeURI(reNation(nation)) },
+    count,
+    current_page
+  );
 }
 
 function rename(name: string): string {
@@ -32,6 +36,11 @@ function rename(name: string): string {
     default:
       return name;
   }
+}
+
+function reNation(name: string) {
+  if (name === "한국") return "대한민국";
+  return name;
 }
 
 export async function findPlayerById(id: string) {
@@ -85,7 +94,7 @@ export async function getPlayerByCr(spid: string) {
   const border = $(".card_back > img").attr("src");
   let ovr = $(".info_ab > .position:first-child > .value").text();
   const nation = $(".nation > img").attr("src");
-  const bigSeason = $(".card_back > .season > img").attr("src");
+  const bigSeason = $(".season > img").attr("src");
   const position = $(".info_ab > .position:first-child > .txt").text();
   const seasonImg = $(".name_wrap > .season > img").attr("src");
   const pay = $(".side_utils > .pay_side ").text();
@@ -102,7 +111,17 @@ export async function getPlayerByCr(spid: string) {
   };
 }
 
-export async function totalPlayerCount({ name, season, position }: { name: string; season: string; position: string }) {
+export async function totalPlayerCount({
+  name,
+  season,
+  position,
+  nation,
+}: {
+  name: string;
+  season: string;
+  position: string;
+  nation: string;
+}) {
   const names = name
     ? rename(name)
         .split(",")
@@ -110,5 +129,5 @@ export async function totalPlayerCount({ name, season, position }: { name: strin
     : [""];
   const seasons = season.split(",");
   const positions = position.split(",");
-  return playerRepository.totalPlayerCount(names, seasons, positions);
+  return playerRepository.totalPlayerCount(names, seasons, positions, reNation(nation));
 }
