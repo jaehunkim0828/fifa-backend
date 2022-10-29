@@ -15,6 +15,7 @@ export interface PlayerAttributes {
   ranks?: Ranks[] | [];
   season?: SeasonAttributes;
   position?: PositionAttributes;
+  nationId?: string | null;
 }
 export interface PlayerInstance extends Model<PlayerAttributes>, PlayerAttributes {}
 
