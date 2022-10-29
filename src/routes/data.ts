@@ -1,10 +1,14 @@
+import axios from "axios";
+import iconv from "iconv-lite";
+import { load } from "cheerio";
 import express, { Request, Response, NextFunction } from "express";
 
 import requestIp from "request-ip";
 import { sendInfoAtGmail } from "../external/mail";
 import { position } from "../InsertData";
 import { getFifaApi } from "../method";
-import { Player, Position, Season } from "../mysql/schema";
+import { Nation, Player, Position, Season } from "../mysql/schema";
+import Card from "../models/card.model";
 
 const dataRouter = express.Router();
 
@@ -64,6 +68,8 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
   try {
     const player: any = await getFifaApi("https://static.api.nexon.co.kr/fifaonline4/latest/spid.json");
 
+    //해줘야 할일 1. positionId, 2. nationId, 3 ovr
+
     player.data.forEach(async (p: { id: number; name: string }, i: number) => {
       const isPlayer = await Player.findOne({
         where: {
@@ -71,13 +77,66 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
         },
       });
       if (p.id && !isPlayer) {
-        console.log(`${p.name}(${p.id})플레이어 생성`);
-        return await Player.create({
+        const { image, border, nationImg, bigSeason, salary, nationId, ovr, positionId } = await axios({
+          url: `https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${p.id}&n1Strong=1`,
+          method: "GET",
+          responseType: "arraybuffer",
+        }).then(async (html) => {
+          const content = iconv.decode(html.data, "UTF-8");
+          const $ = load(content);
+          const image = $(".img > img").attr("src");
+          const border = $(".card_back > img").attr("src");
+          const nationImg = $(".nation > img").attr("src");
+          const bigSeason = $(".season > img").attr("src");
+          const pay = $(".side_utils > .pay_side ").text();
+          const ovr = $(".thumb > .ovr").text();
+          const nation = $(".nation > .txt").text();
+          const position = $(".info_ab > .position:first-child > .txt").text();
+          const positionId = await Position.findOne({
+            where: {
+              desc: position,
+            },
+          });
+
+          const nationId = await Nation.findOne({
+            where: {
+              name: nation,
+            },
+          });
+          if (!nationId?.getDataValue("id")) {
+            await Nation.create({
+              name: nation,
+            });
+          }
+
+          return {
+            image,
+            border,
+            nationImg,
+            nationId: nationId?.getDataValue("id"),
+            bigSeason,
+            salary: pay,
+            ovr: +ovr + 3,
+            positionId: positionId?.getDataValue("spposition"),
+          };
+        });
+
+        await Player.create({
           id: p.id,
           name: p.name,
           seasonSeasonId: p.id.toString().slice(0, 3),
-          positionId: null,
+          positionId: positionId?.toString(),
+          ovr,
+          nationId: nationId?.toString(),
         });
+
+        await Card.create({
+          image: image ?? "",
+          salary: +salary ?? 0,
+          border: border ?? "",
+          bigSeason: bigSeason ?? "",
+          nation: nationImg ?? "",
+        }).catch(() => console.log("카드생성중에 오류 발생"));
       }
     });
 
