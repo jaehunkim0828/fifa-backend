@@ -7,13 +7,13 @@ import * as playerRepository from "../repository/player";
 import { position } from "../InsertData";
 
 export async function findPlayers(
-  search: { name: string; season: string; position: string; nation: string },
+  search: { name: string; season: string; position: string; nation: string; team: string },
   current_page: string = "0",
   count: string = "9"
 ) {
-  const { name, season, position, nation } = search;
+  const { name, season, position, nation, team } = search;
   return playerRepository.getplayerAllSeason(
-    { name: decodeURI(rename(name)), season: season, position: position, nation: decodeURI(reNation(nation)) },
+    { name: decodeURI(rename(name)), season: season, position: position, nation: decodeURI(reNation(nation)), team: decodeURI(team) },
     count,
     current_page
   );
@@ -116,11 +116,13 @@ export async function totalPlayerCount({
   season,
   position,
   nation,
+  team,
 }: {
   name: string;
   season: string;
   position: string;
   nation: string;
+  team: string;
 }) {
   const names = name
     ? rename(name)
@@ -129,5 +131,5 @@ export async function totalPlayerCount({
     : [""];
   const seasons = season.split(",");
   const positions = position.split(",");
-  return playerRepository.totalPlayerCount(names, seasons, positions, reNation(nation));
+  return playerRepository.totalPlayerCount(names, seasons, positions, reNation(nation), team);
 }
