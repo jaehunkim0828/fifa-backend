@@ -2,6 +2,7 @@ export interface RankType {
   spid: string;
   po: PositionStatus;
   matchtype: string;
+  name: string;
 }
 
 export enum PositionStatus {
