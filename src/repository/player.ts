@@ -128,7 +128,6 @@ function hasPosition(value: string[]) {
       },
     };
   } else if (value[0] === "") {
-    console.log(1);
     return {
       positionId: {
         [Op.not]: "0", //골키퍼 빼기
