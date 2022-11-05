@@ -4,19 +4,6 @@ import { sendErrorAtGmail } from "../external/mail";
 import * as rankService from "../service/rank.service";
 import { RankType } from "../types/rank/rank";
 
-export async function createPlayerRank(req: Request, res: Response, next: NextFunction) {
-  const { player, name } = req.body;
-  // 날짜 spid겹치는거 있는지 확인
-  try {
-    const playerName = await rankService.create(player, name);
-    res.status(201).send(`${playerName}선수의 데이터가 생성되었습니다.`);
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(404).send(err.message);
-    }
-  }
-}
-
 export async function createPlayerAuto(req: Request, res: Response, next: NextFunction) {
   try {
     await rankService.createRanksEvery();
@@ -29,12 +16,14 @@ export async function createPlayerAuto(req: Request, res: Response, next: NextFu
   }
 }
 
-export async function PlayerAbility(req: Request<"", "", RankType>, res: Response, next: NextFunction) {
+export async function createPlayerRank(req: Request<"", "", RankType>, res: Response, next: NextFunction) {
   try {
-    const { matchtype, spid } = req.body;
+    const { matchtype, spid, name } = req.body;
     const ability = await rankService.findNewRank(spid, matchtype);
-    if (ability) res.status(200).send(ability.data);
-    else {
+    if (ability) {
+      const playerName = await rankService.create(ability?.data, name);
+      res.status(200).send(`${playerName}선수의 데이터가 생성되었습니다.`);
+    } else {
       throw new Error("선수 데이터가 없습니다.");
     }
   } catch (e) {

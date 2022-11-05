@@ -7,6 +7,7 @@ import CommentModel from "../models/comment.model";
 import PostModel from "../models/post.model";
 import CardModel from "../models/card.model";
 import NationModel from "../models/nation.model";
+import TeamModel from "../models/team.model";
 
 export const Player = PlayerModel;
 export const Season = SeasonModel;
@@ -17,6 +18,7 @@ export const Comment = CommentModel;
 export const Post = PostModel;
 export const Card = CardModel;
 export const Nation = NationModel;
+export const Team = TeamModel;
 
 // spids
 Player.belongsTo(Season);
@@ -26,6 +28,11 @@ Player.belongsTo(Position, {
   targetKey: "spposition",
 });
 Player.hasMany(Value, {
+  foreignKey: "spidId",
+  sourceKey: "id",
+});
+
+Player.hasMany(Team, {
   foreignKey: "spidId",
   sourceKey: "id",
 });
@@ -82,4 +89,10 @@ Card.belongsTo(Player, {
 Nation.hasMany(Player, {
   foreignKey: "nationId",
   sourceKey: "id",
+});
+
+//team
+Team.belongsTo(Player, {
+  foreignKey: "spidId",
+  targetKey: "id",
 });

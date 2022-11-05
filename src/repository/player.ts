@@ -1,7 +1,7 @@
 import SQ from "sequelize";
 import { PlayerInstance } from "../models/player.model";
 import Position from "../models/position.model";
-import { Player, Rank, Season, Nation } from "../mysql/schema";
+import { Player, Rank, Season, Nation, Team } from "../mysql/schema";
 
 const Op = SQ.Op;
 
@@ -11,7 +11,7 @@ const Op = SQ.Op;
  *  @argument current_page: 현재 페이지
  */
 export async function getplayerAllSeason(
-  search: { name: string; season: string; position: string; nation: string },
+  search: { name: string; season: string; position: string; nation: string; team: string },
   count: string,
   current_page: string
 ) {
@@ -73,7 +73,7 @@ export async function getplayerAllSeason(
           }),
         },
         hasValue(season, "seasonSeasonId"),
-        hasValue(position, "positionId"),
+        hasPosition(position),
       ],
     },
     include: [
@@ -94,9 +94,10 @@ export async function getplayerAllSeason(
         required: false,
       },
       hasNation(search.nation),
+      havTeam(search.team),
     ],
     order: [[SQ.fn("Sum", SQ.col("ranks.matchCount")), "DESC"]],
-    group: ["spids.id"],
+    group: ["spids.id", "teams.id"],
   }).then((data) => data.slice(offset, offset + limit));
 }
 
@@ -119,6 +120,32 @@ export async function getPlayerInfo(id: string) {
   });
 }
 
+function hasPosition(value: string[]) {
+  if (value[0] === "0") {
+    return {
+      positionId: {
+        [Op.like]: value[0],
+      },
+    };
+  } else if (value[0] === "") {
+    return {
+      positionId: {
+        [Op.not]: "0", //골키퍼 빼기
+      },
+    };
+  } else {
+    return {
+      [Op.or]: value.map((n) => {
+        return {
+          positionId: {
+            [Op.like]: n,
+          },
+        };
+      }),
+    };
+  }
+}
+
 function hasNation(value: string) {
   if (value !== "")
     return {
@@ -134,7 +161,22 @@ function hasNation(value: string) {
   };
 }
 
-export async function totalPlayerCount(names: string[], season: string[], position: string[], nation: string) {
+function havTeam(value: string) {
+  if (value !== "")
+    return {
+      model: Team,
+      where: {
+        name: {
+          [Op.like]: `%${value}%`,
+        },
+      },
+    };
+  return {
+    model: Team,
+  };
+}
+
+export async function totalPlayerCount(names: string[], season: string[], position: string[], nation: string, team: string) {
   return Player.findAndCountAll({
     where: {
       [Op.and]: [
@@ -148,10 +190,11 @@ export async function totalPlayerCount(names: string[], season: string[], positi
           }),
         },
         hasValue(season, "seasonSeasonId"),
-        hasValue(position, "positionId"),
+        hasPosition(position),
       ],
     },
-    include: [hasNation(nation)],
+    include: [hasNation(nation), havTeam(team)],
+    group: ["spids.id", "teams.id"],
   });
 }
 
