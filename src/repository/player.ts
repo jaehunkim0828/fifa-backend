@@ -73,7 +73,7 @@ export async function getplayerAllSeason(
           }),
         },
         hasValue(season, "seasonSeasonId"),
-        hasValue(position, "positionId"),
+        hasPosition(position),
       ],
     },
     include: [
@@ -120,6 +120,33 @@ export async function getPlayerInfo(id: string) {
   });
 }
 
+function hasPosition(value: string[]) {
+  if (value[0] === "0") {
+    return {
+      positionId: {
+        [Op.like]: value[0],
+      },
+    };
+  } else if (value[0] === "") {
+    console.log(1);
+    return {
+      positionId: {
+        [Op.not]: "0", //골키퍼 빼기
+      },
+    };
+  } else {
+    return {
+      [Op.or]: value.map((n) => {
+        return {
+          positionId: {
+            [Op.like]: n,
+          },
+        };
+      }),
+    };
+  }
+}
+
 function hasNation(value: string) {
   if (value !== "")
     return {
@@ -164,7 +191,7 @@ export async function totalPlayerCount(names: string[], season: string[], positi
           }),
         },
         hasValue(season, "seasonSeasonId"),
-        hasValue(position, "positionId"),
+        hasPosition(position),
       ],
     },
     include: [hasNation(nation), havTeam(team)],
