@@ -7,7 +7,7 @@ import requestIp from "request-ip";
 import { sendInfoAtGmail } from "../external/mail";
 import { position } from "../InsertData";
 import { getFifaApi } from "../method";
-import { Nation, Player, Position, Season } from "../mysql/schema";
+import { Nation, Player, Position, Season, Team } from "../mysql/schema";
 import Card from "../models/card.model";
 
 const dataRouter = express.Router();
@@ -70,14 +70,15 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
 
     //해줘야 할일 1. positionId, 2. nationId, 3 ovr
 
-    player.data.forEach(async (p: { id: number; name: string }, i: number) => {
+    for (let i = 0; i < player.data.length; i += 1) {
+      const p: { id: number; name: string } = player.data[i];
       const isPlayer = await Player.findOne({
         where: {
           id: p.id,
         },
       });
       if (p.id && !isPlayer) {
-        const { image, border, nationImg, bigSeason, salary, nationId, ovr, positionId } = await axios({
+        const { image, border, nationImg, bigSeason, salary, nationId, ovr, positionId, team } = await axios({
           url: `https://fifaonline4.nexon.com/DataCenter/PlayerInfo?spid=${p.id}&n1Strong=1`,
           method: "GET",
           responseType: "arraybuffer",
@@ -92,6 +93,7 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
           const ovr = $(".thumb > .ovr").text();
           const nation = $(".nation > .txt").text();
           const position = $(".info_ab > .position:first-child > .txt").text();
+          const team = $(".data_table > ul > li ").text();
           const positionId = await Position.findOne({
             where: {
               desc: position,
@@ -118,6 +120,7 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
             salary: pay,
             ovr: +ovr + 3,
             positionId: positionId?.getDataValue("spposition"),
+            team,
           };
         });
 
@@ -128,17 +131,32 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
           positionId: positionId?.toString(),
           ovr,
           nationId: nationId?.toString(),
-        });
+        }).catch(() => console.log("선수생성중에 오류 발생"));
 
         await Card.create({
+          id: p.id,
           image: image ?? "",
           salary: +salary ?? 0,
           border: border ?? "",
           bigSeason: bigSeason ?? "",
           nation: nationImg ?? "",
-        }).catch(() => console.log("카드생성중에 오류 발생"));
+        }).catch((data) => console.log(data, "카드생성중에 오류 발생"));
+
+        team
+          .trim()
+          .split("\n")
+          .forEach(async (e, i) => {
+            if (i % 4 === 1) {
+              await Team.create({
+                name: e.trim(),
+                spidId: p.id,
+              }).catch(() => console.log("팀생성중에 오류 발생"));
+            }
+          });
+
+        console.log(`${p.id}[${p.name}] 시즌${p.id.toString().slice(0, 3)}`);
       }
-    });
+    }
 
     await sendInfoAtGmail("선수 업데이트", "새로운 시즌 선수들 업데이트 성공했습니다.");
 
@@ -147,6 +165,21 @@ dataRouter.route("/newPlayer").get(async (req: Request, res: Response, next: Nex
     console.log(err);
     res.status(404).send(err);
   }
+});
+
+dataRouter.route("/getseason").get(async (req: Request, res: Response, next: NextFunction) => {
+  const seasons = await Season.findAll({}).then((data) => {
+    return data.map((e) => {
+      const result = {
+        id: e.seasonId,
+        name: e.className?.split("(")[0].trim(),
+        seasonImg: e.seasonImg,
+      };
+      return result;
+    });
+  });
+
+  res.send(seasons);
 });
 
 export default dataRouter;
