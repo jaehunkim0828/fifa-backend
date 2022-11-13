@@ -61,6 +61,7 @@ export async function getRankById(spid: string, po: string) {
   let shoot: number = 0;
   let tackle: number = 0;
   let matchCount: number = 0;
+  let saving: number = 0;
 
   partOfRank.forEach((rank) => {
     assist += +rank.assist * rank.matchCount;
@@ -75,6 +76,7 @@ export async function getRankById(spid: string, po: string) {
     shoot += +rank.shoot * rank.matchCount;
     tackle += +rank.tackle * rank.matchCount;
     matchCount += +rank.matchCount;
+    saving += rank.saving ?? 0;
   });
 
   return {
@@ -90,6 +92,7 @@ export async function getRankById(spid: string, po: string) {
     shoot: Math.round((shoot / matchCount) * 10000) / 10000,
     tackle: Math.round((tackle / matchCount) * 10000) / 10000,
     matchCount: matchCount,
+    saving,
     seasonImg: partOfRank[0].spid?.season?.seasonImg,
   };
 }

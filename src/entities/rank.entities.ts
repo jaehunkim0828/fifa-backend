@@ -15,4 +15,5 @@ export class Ranks {
   tackle: string;
   matchCount: number;
   createDate: string;
+  saving?: number;
 }

@@ -43,6 +43,7 @@ export async function findRankByIdAndPostion(spid: string, po: string) {
       "passSuccess",
       "passTry",
       "tackle",
+      "saving",
     ],
     where: {
       spidId: spid,

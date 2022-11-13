@@ -5,6 +5,7 @@ import { sequelize } from "../mysql/db";
 export interface TeamAttributes {
   id?: number;
   name: string;
+  spidId: number;
 }
 
 interface TeamInstance extends Model<TeamAttributes>, TeamAttributes {}

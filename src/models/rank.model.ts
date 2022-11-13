@@ -2,7 +2,7 @@ import { DataTypes, Model, BuildOptions } from "sequelize";
 import { Ranks } from "../entities/rank.entities";
 
 import { sequelize } from "../mysql/db";
-import { PlayerAttributes, PlayerModel } from "./player.model";
+import { PlayerAttributes } from "./player.model";
 
 export interface RankAttributes extends Ranks {
   readonly id?: number;
@@ -78,6 +78,10 @@ const Rank = sequelize.define(
     tackle: {
       type: DataTypes.FLOAT,
       allowNull: false,
+    },
+    saving: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
     },
     createDate: {
       type: DataTypes.STRING(128),
