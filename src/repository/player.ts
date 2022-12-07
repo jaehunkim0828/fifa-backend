@@ -96,7 +96,7 @@ export async function getplayerAllSeason(
       hasNation(search.nation),
       havTeam(search.team),
     ],
-    order: [[SQ.fn("Sum", SQ.col("ranks.matchCount")), "DESC"]],
+    order: [["ovr", "DESC"]],
     group: ["spids.id", "teams.id"],
   }).then((data) => data.slice(offset, offset + limit));
 }
